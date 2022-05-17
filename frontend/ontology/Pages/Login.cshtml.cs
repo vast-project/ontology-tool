@@ -21,7 +21,7 @@ namespace ontology.Pages
             {
                 string accessToken = await HttpContext.GetTokenAsync("id_token");
                 if (!string.IsNullOrWhiteSpace(accessToken)) {
-                    Response.Redirect($"{_frontEndUrl}login-success/{accessToken}");
+                    Response.Redirect($"{_frontEndUrl}login-success/{accessToken}/");
                 }
             }
         }
