@@ -17,6 +17,7 @@ RUN dotnet publish -c Release -o publishContainer
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
+RUN apt update && apt upgrade
 WORKDIR /frontend/ontology
 COPY --from=build-env /frontend/ontology/publishContainer .
 ENTRYPOINT ["dotnet", "ontology.dll"]
