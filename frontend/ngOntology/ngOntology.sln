@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32328.378
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "ngOntology", "ngOntology.esproj", "{A5C06855-B2D7-46BA-B25F-62C861FA16DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "apiOntlogy", "..\..\api\apiOntlogy\apiOntlogy.csproj", "{F035D5B2-03BA-4E8B-99AC-E9401DD7A5AA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A5C06855-B2D7-46BA-B25F-62C861FA16DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5C06855-B2D7-46BA-B25F-62C861FA16DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5C06855-B2D7-46BA-B25F-62C861FA16DB}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{A5C06855-B2D7-46BA-B25F-62C861FA16DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5C06855-B2D7-46BA-B25F-62C861FA16DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5C06855-B2D7-46BA-B25F-62C861FA16DB}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{F035D5B2-03BA-4E8B-99AC-E9401DD7A5AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F035D5B2-03BA-4E8B-99AC-E9401DD7A5AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F035D5B2-03BA-4E8B-99AC-E9401DD7A5AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F035D5B2-03BA-4E8B-99AC-E9401DD7A5AA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D55D2376-85EB-4ED3-9BDC-5679BBD4B2B3}
+	EndGlobalSection
+EndGlobal

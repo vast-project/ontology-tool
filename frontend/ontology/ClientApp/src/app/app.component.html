@@ -1,0 +1,24 @@
+<body>
+  <mat-sidenav-container autosize>
+    <mat-sidenav #sidenav
+                 fixedInViewport="true"
+                 mode="side"
+                 opened="{{ isSideNavExpanded }}">
+      <app-vast-nav (toggleMenu)="toggleMenu()"
+                    [isExpanded]="isSideNavExpanded"></app-vast-nav>
+    </mat-sidenav>
+    <mat-sidenav-content [style.margin-left.px]="!isSideNavExpanded ? 67 : 280">
+      <header>
+        <span class="title">
+          Ontology Visualization & Design
+        </span>
+
+      </header>
+      <hr/>
+      <div class="content-container">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+
+</body>

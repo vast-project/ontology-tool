@@ -1,0 +1,22 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+WORKDIR /
+
+# Copy everything
+COPY . ./
+
+#install node
+RUN curl -sL https://deb.nodesource.com/setup_16.x |  bash -
+RUN apt-get install -y nodejs
+
+
+WORKDIR /frontend/ontology
+# Restore as distinct layers
+RUN dotnet restore
+# Build and publish a release
+RUN dotnet publish -c Release -o publishContainer
+
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+WORKDIR /frontend/ontology
+COPY --from=build-env /frontend/ontology/publishContainer .
+ENTRYPOINT ["dotnet", "ontology.dll"]

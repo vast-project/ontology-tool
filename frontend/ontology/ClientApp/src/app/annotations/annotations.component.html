@@ -1,0 +1,33 @@
+<div class="ann-view">
+  <div class="collections">
+    <h1>Collections</h1>
+    <input matInput placeholder="Search" value="" class="search-box" [(ngModel)]="searchCollections" (keyup)="onKeyUpCol()" />
+    <perfect-scrollbar class="collections-list">
+      <mat-list class="item" *ngFor="let item of (resultsCollection | async)">
+        <p mat-list-item matLine (click)="onClickCol(item.id)">{{ item.name }}</p>
+      </mat-list>
+    </perfect-scrollbar>
+  </div>
+  <div class="documents">
+    <h1>Documents</h1>
+    <input matInput placeholder="Search" value="" class="search-box" [(ngModel)]="searchDocuments" (keyup)="onKeyUpDoc()" />
+    <perfect-scrollbar class="documents-list">
+      <mat-list class="item" *ngFor="let item of (resultsDocuments | async)">
+        <p mat-list-item matLine (click)="onClickDoc(item.id)">{{ item.name }}</p>
+      </mat-list>
+    </perfect-scrollbar>
+  </div>
+  <div class="annotations">
+    <h1>Annotations</h1>
+    <input matInput placeholder="Search" value="" class="search-box" [(ngModel)]="searchAnnotations" (keyup)="onKeyUpAnn()" />
+    <perfect-scrollbar class="annotations-list">
+      <mat-list class="item" *ngFor="let item of (resultsAnnotations | async)">
+        <div mat-list-item matLine class="data">
+          <div class="keywords"><span class="keyword" *ngFor="let keyword of item.keywords">{{keyword.name}}</span></div>
+          <div class="description">{{item.description}}</div>
+          <div class="document">{{item.documentName}}</div>
+        </div>
+      </mat-list>
+    </perfect-scrollbar>
+  </div>
+</div>

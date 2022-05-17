@@ -1,0 +1,20 @@
+<div class="dashboard">
+  <h1>Dashboard</h1>
+  <div  class="primary-tiles">
+    <a *ngFor="let tile of dataTiles" class="tile"><span class="title">{{ tile.title }}</span><span class="subtitle">{{ tile.subtitle }}</span><div class="data"><span *ngFor="let dataItem of tile.data" class="data">{{ dataItem }}</span></div></a>
+  </div>
+  <div class="recent">
+    <div class="recently-added">
+      <h1>Recently added</h1>
+    </div>
+    <div class="visualizations">
+      <div class="description">
+        <h1>Ontology Design Visualizations</h1>
+        <p>Explore ontologies and customize visualizations with our interactive tool</p>
+      </div>
+      <div class="graph">
+        <app-dashboard-graph></app-dashboard-graph>
+      </div>
+    </div>
+  </div>
+</div>

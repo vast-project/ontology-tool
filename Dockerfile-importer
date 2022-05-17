@@ -1,0 +1,17 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+WORKDIR /
+
+# Copy everything
+COPY . ./
+
+WORKDIR /frontend/VAST.Annotation.ProxyTest
+# Restore as distinct layers
+RUN dotnet restore
+# Build and publish a release
+RUN dotnet publish -c Release -o publishContainer
+
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+WORKDIR /frontend/ontology
+COPY --from=build-env /frontend/VAST.Annotation.ProxyTest/publishContainer .
+ENTRYPOINT ["dotnet", "VAST.Annotation.ProxyTest.dll"]

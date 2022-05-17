@@ -1,0 +1,78 @@
+<div class="designer">
+  <div class="mine">
+    <div class="statement">
+      <div class="source">
+        <input matInput placeholder="Search Term" [(ngModel)]="selectedTerm" [matAutocomplete]="auto"
+               [formControl]="searchTermsCtrl" placeholder="Keyword or Concept">
+        <button *ngIf="selectedTerm" matSuffix mat-icon-button aria-label="Clear" (click)="clearSelectionKeyword()">
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelectedKeyword()"
+                          [displayWith]="displayWith">
+          <ng-container>
+            <mat-option *ngFor="let Term of (filteredTerms)" [value]="Term">
+              <span><b>{{Term.name}}</b></span>
+            </mat-option>
+          </ng-container>
+        </mat-autocomplete>
+      </div>
+      <div class="link-type">
+        <input matInput placeholder="Search Term" [(ngModel)]="selectedLink" [matAutocomplete]="auto1"
+               [formControl]="searchLinksCtrl" placeholder="Link">
+        <button *ngIf="selectedLink" matSuffix mat-icon-button aria-label="Clear" (click)="clearSelectionLink()">
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-autocomplete #auto1="matAutocomplete" (optionSelected)="onSelectedLink()"
+                          [displayWith]="displayLinkWith">
+          <ng-container>
+            <mat-option *ngFor="let Term of (filteredLinks)" [value]="Term">
+              <span><b>{{Term.name}}</b></span>
+            </mat-option>
+          </ng-container>
+        </mat-autocomplete>
+      </div>
+      <div class="target">
+        <input matInput placeholder="Search Term" [(ngModel)]="selectedConcept" [matAutocomplete]="auto2"
+               [formControl]="searchConceptsCtrl" placeholder="Concept">
+        <button *ngIf="selectedConcept" matSuffix mat-icon-button aria-label="Clear" (click)="clearSelectionConcept()">
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-autocomplete #auto2="matAutocomplete" (optionSelected)="onSelectedConcept()"
+                          [displayWith]="displayWith">
+          <ng-container>
+            <mat-option *ngFor="let Term of (filteredConcepts)" [value]="Term">
+              <span><b>{{Term.name}}</b></span>
+            </mat-option>
+          </ng-container>
+        </mat-autocomplete>
+      </div>
+      <mat-icon (click)="addStatement()">add</mat-icon>
+    </div>
+    <div class="my-statements">
+      <h1>My Statements</h1>
+      <div class="statement" *ngFor="let Statement of myStatements">
+        <div class="text">
+          {{ Statement?.source?.name }} {{ Statement?.relationshipType?.name }} {{ Statement?.target?.name }}
+        </div>
+        <div class="icons">
+          <mat-icon>delete_forever</mat-icon>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="other">
+    <h1>Other Statements</h1>
+    <div class="statement" *ngFor="let Statement of otherStatements">
+      <div class="text">
+        {{ Statement?.source?.name }} {{ Statement?.relationshipType?.name }} {{ Statement?.target?.name }}
+      </div>
+      <div class="icons">
+        <mat-icon>thumb_down</mat-icon>
+        <mat-icon>thumb_up</mat-icon>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,32 @@
+<section [class.sidenav]="isExpanded" [class.sidenav-small]="!isExpanded">
+  <div class="toggle">
+    <img *ngIf="isExpanded" (click)="toggleMenu.emit(null)" src="/assets/logo/vast.png" srcset="/assets/logo/vast@2x.png 2x,/assets/logo/vast@3x.png 3x" class="logo" alt="VAST Platform" />
+    <mat-icon class="expand-button" *ngIf="!isExpanded" (click)="toggleMenu.emit(null)">arrow_forward</mat-icon>
+  </div>
+  <hr />
+  <mat-list class="nav" *ngFor="let route of routeLinks">
+    <a mat-list-item
+       routerLinkActive="active-link"
+       class="hover"
+       routerLink="{{ route.link }}">
+      <mat-icon mat-list-icon
+                [matTooltip]="!isExpanded ? route.name : ''"
+                matTooltipPosition="right">
+        {{ route.icon }}
+      </mat-icon>
+      <p matLine *ngIf="isExpanded">{{ route.name }}</p>
+    </a>
+  </mat-list>
+  <mat-list class="nav">
+    <a mat-list-item *ngIf="!isAuthenticated()" href="#login"
+       class="hover"
+       (click)="login()">
+      <mat-icon mat-list-icon
+                [matTooltip]="!isExpanded ? 'Login' : ''"
+                matTooltipPosition="right">
+        supervisor_account
+      </mat-icon>
+      <p matLine *ngIf="isExpanded">Login</p>
+    </a>
+  </mat-list>
+</section>
