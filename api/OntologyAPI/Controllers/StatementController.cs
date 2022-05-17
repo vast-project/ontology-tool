@@ -22,6 +22,12 @@ namespace OntologyAPI.Controllers
     [ApiController]
     public class StatementController : ControllerBase
     {
+        private VastOntologyContext _ontologyContext = null;
+        public StatementController(VastOntologyContext ontologyContext)
+        {
+            _ontologyContext = ontologyContext;
+        }
+
         private string UserName
         {
             get
@@ -49,9 +55,9 @@ namespace OntologyAPI.Controllers
         [HttpGet("")]
         public IEnumerable<object> GetAll(string? search = null, int? sourceId = null, int? targetId = null)
         {
-            using (VastOntologyContext context = new VastOntologyContext())
+            
             {
-                var items = context.ItemLinks;
+                var items = _ontologyContext.ItemLinks;
 
                 return items.Select(i => new
                 {
@@ -68,9 +74,9 @@ namespace OntologyAPI.Controllers
         [HttpGet("me")]
         public IEnumerable<object> GetMine(string? search = null, int? sourceId = null, int? targetId = null)
         {
-            using (VastOntologyContext context = new VastOntologyContext())
+            
             {
-                var items = context.ItemLinks.Where(i => i.AuthorId == UserName || i.Votes.Any(v => v.AuthorId == UserName && v.DuplicateLink == true));
+                var items = _ontologyContext.ItemLinks.Where(i => i.AuthorId == UserName || i.Votes.Any(v => v.AuthorId == UserName && v.DuplicateLink == true));
 
                 return items.Select(i => new
                 {
@@ -87,9 +93,9 @@ namespace OntologyAPI.Controllers
         [HttpGet("other")]
         public IEnumerable<object> GetOthers(string? search = null, int? sourceId = null, int? targetId = null)
         {
-            using (VastOntologyContext context = new VastOntologyContext())
+            
             {
-                var items = context.ItemLinks.Where(i => i.AuthorId != UserName);
+                var items = _ontologyContext.ItemLinks.Where(i => i.AuthorId != UserName);
 
                 return items.Select(i => new
                 {
@@ -106,9 +112,9 @@ namespace OntologyAPI.Controllers
         [HttpGet("rel-types")]
         public IEnumerable<object> GetRelType(string? search = null)
         {
-            using (VastOntologyContext context = new VastOntologyContext())
+            
             {
-                IQueryable<RelationshipType> items = context.RelationshipTypes;
+                IQueryable<RelationshipType> items = _ontologyContext.RelationshipTypes;
                 if (!string.IsNullOrWhiteSpace(search))
                 {
                     items = items.Where(x => x.Name.ToLower().Contains(search.ToLower()));
@@ -126,21 +132,21 @@ namespace OntologyAPI.Controllers
             if (value == null || (value.TargetId == null && value.TargetName == null))
                 throw new ArgumentNullException(nameof(value));
 
-            using (VastOntologyContext context = new VastOntologyContext())
+            
             {
                 ItemLink addItem;
                 if (value.TargetId != null)
                 {
-                    var existingItem = context.ItemLinks.FirstOrDefault(il => il.Source.Id == value.SourceId && il.Target.Id == value.TargetId && il.RelationshipType.Id == value.RelationshipId);
+                    var existingItem = _ontologyContext.ItemLinks.FirstOrDefault(il => il.Source.Id == value.SourceId && il.Target.Id == value.TargetId && il.RelationshipType.Id == value.RelationshipId);
                     if (existingItem != null)
                     {
                         if (existingItem.AuthorId != UserName)
                         {
-                            var existingVote = context.Votes.FirstOrDefault(v =>
+                            var existingVote = _ontologyContext.Votes.FirstOrDefault(v =>
                                 v.AuthorId == UserName && v.ItemLink.Id == existingItem.Id);
                             if (existingVote == null)
                             {
-                                context.Votes.Add(new Vote()
+                                _ontologyContext.Votes.Add(new Vote()
                                 {
                                     AuthorId = UserName,
                                     AuthorName = User.Identity.Name,
@@ -158,11 +164,11 @@ namespace OntologyAPI.Controllers
                             AuthorId = UserName,
                             AuthorName = User.Identity.Name,
                             CreatedDate = DateTime.Now.ToUniversalTime(),
-                            Source = context.Items.Single(i => i.Id == value.SourceId),
-                            Target = context.Items.Single(i => i.Id == value.TargetId),
-                            RelationshipType = context.RelationshipTypes.Single(rt => rt.Id == value.RelationshipId),
+                            Source = _ontologyContext.Items.Single(i => i.Id == value.SourceId),
+                            Target = _ontologyContext.Items.Single(i => i.Id == value.TargetId),
+                            RelationshipType = _ontologyContext.RelationshipTypes.Single(rt => rt.Id == value.RelationshipId),
                         };
-                        context.ItemLinks.Add(addItem);
+                        _ontologyContext.ItemLinks.Add(addItem);
                     }
                 }
                 else
@@ -175,20 +181,20 @@ namespace OntologyAPI.Controllers
                         LastSyncTime = DateTime.Now.ToUniversalTime(),
                         Value = value.TargetName.ToLower().Replace("/", "_").Replace(" ", "_")
                     };
-                    context.Items.Add(addConcept);
+                    _ontologyContext.Items.Add(addConcept);
                     addItem = new ItemLink
                     {
                         AuthorId = UserName,
                         AuthorName = User.Identity.Name,
                         CreatedDate = DateTime.Now.ToUniversalTime(),
-                        Source = context.Items.Single(i => i.Id == value.SourceId),
+                        Source = _ontologyContext.Items.Single(i => i.Id == value.SourceId),
                         Target = addConcept,
-                        RelationshipType = context.RelationshipTypes.Single(rt => rt.Id == value.RelationshipId)
+                        RelationshipType = _ontologyContext.RelationshipTypes.Single(rt => rt.Id == value.RelationshipId)
                     };
-                    context.ItemLinks.Add(addItem);
+                    _ontologyContext.ItemLinks.Add(addItem);
                 }
 
-                context.SaveChanges();
+                _ontologyContext.SaveChanges();
             }
         }
 
@@ -196,11 +202,11 @@ namespace OntologyAPI.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-            using (VastOntologyContext context = new VastOntologyContext())
+            
             {
-                var itemToRemove = context.ItemLinks.Single(i => i.Id == id && i.AuthorId == UserName);
-                context.ItemLinks.Remove(itemToRemove);
-                context.SaveChanges();
+                var itemToRemove = _ontologyContext.ItemLinks.Single(i => i.Id == id && i.AuthorId == UserName);
+                _ontologyContext.ItemLinks.Remove(itemToRemove);
+                _ontologyContext.SaveChanges();
             }
         }
     }
