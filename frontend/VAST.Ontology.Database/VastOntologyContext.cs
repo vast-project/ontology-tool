@@ -19,9 +19,21 @@ namespace VAST.Ontology.Database
         public DbSet<Collection> Collections { get; set; }
         public DbSet<Document> Documents { get; set; }
 
+        public VastOntologyContext(DbContextOptions<VastOntologyContext> options)
+            : base(options)
+        {
+        }
+
+        private readonly string _connectionString;
+
+        public VastOntologyContext(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(@"Server=;Port=5432;Database=;User Id=;Password=;");
+            optionsBuilder.UseNpgsql(_connectionString);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

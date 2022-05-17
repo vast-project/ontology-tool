@@ -13,6 +13,12 @@ namespace OntologyAPI.Controllers
     [ApiController]
     public class VoteController : ControllerBase
     {
+        private VastOntologyContext _ontologyContext = null;
+        public VoteController(VastOntologyContext ontologyContext)
+        {
+            _ontologyContext=ontologyContext;
+        }
+
         private string UserName
         {
             get
@@ -44,18 +50,18 @@ namespace OntologyAPI.Controllers
             {
                 voteNegative = true;
             }
-            using (VastOntologyContext context = new VastOntologyContext())
+            
             {
-                var existingItem = context.ItemLinks.FirstOrDefault(il => il.Source.Id == value.Source.Id && il.Target.Id == value.Target.Id && il.RelationshipType.Id == value.RelationshipType.Id);
+                var existingItem = _ontologyContext.ItemLinks.FirstOrDefault(il => il.Source.Id == value.Source.Id && il.Target.Id == value.Target.Id && il.RelationshipType.Id == value.RelationshipType.Id);
                 if (existingItem != null)
                 {
                     if (existingItem.AuthorId != UserName)
                     {
-                        var existingVote = context.Votes.FirstOrDefault(v =>
+                        var existingVote = _ontologyContext.Votes.FirstOrDefault(v =>
                             v.AuthorId == UserName && v.ItemLink.Id == existingItem.Id);
                         if (existingVote == null)
                         {
-                            context.Votes.Add(new Vote()
+                            _ontologyContext.Votes.Add(new Vote()
                             {
                                 AuthorId = UserName,
                                 AuthorName = User.Identity.Name,
@@ -71,7 +77,7 @@ namespace OntologyAPI.Controllers
                     }
                 }
                 
-                context.SaveChanges();
+                _ontologyContext.SaveChanges();
             }
         }
 

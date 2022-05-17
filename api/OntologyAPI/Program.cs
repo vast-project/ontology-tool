@@ -5,12 +5,16 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OntologyAPI.Auth;
+using VAST.Ontology.Database;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddEnvironmentVariables("VAST_Ontology_");
 
 builder.Services.AddCors(options =>
 {
@@ -92,6 +96,9 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+builder.Services.AddDbContext<VastOntologyContext>(
+    options => options.UseNpgsql(@$"Server={builder.Configuration["Database:ServerName"]};Port={builder.Configuration["Database:Port"]};Database={builder.Configuration["Database:Database"]};User Id={builder.Configuration["Database:User"]};Password={builder.Configuration["Database:Password"]};"));
 
 var app = builder.Build();
 

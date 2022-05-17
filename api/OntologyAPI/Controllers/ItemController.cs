@@ -20,6 +20,12 @@ namespace OntologyAPI.Controllers
     [ApiController]
     public class ItemController : ControllerBase
     {
+        private VastOntologyContext _ontologyContext = null;
+        public ItemController(VastOntologyContext ontologyContext)
+        {
+            _ontologyContext = ontologyContext;
+        }
+
         // GET: api/<ItemController>
         [HttpGet("")]
         public IEnumerable<object> Get(ItemType type = ItemType.Keyword, string? search = null, int page = 1, int pageSize = 10)
@@ -34,9 +40,9 @@ namespace OntologyAPI.Controllers
                 pageSize = 1;
             }
 
-            using (VastOntologyContext context = new VastOntologyContext())
+            
             {
-                var items = context.Items.Where(i => !i.IsDeleted);
+                var items = _ontologyContext.Items.Where(i => !i.IsDeleted);
                 if (type != ItemType.Unknown)
                 {
                     items = items.Where(i => i.ItemType == type);
@@ -64,13 +70,13 @@ namespace OntologyAPI.Controllers
         [HttpGet("stats")]
         public object GetStats()
         {
-            using (VastOntologyContext context = new VastOntologyContext())
+            
             {
-                int annotations = context.Annotations.Count(i => !i.IsDeleted);
-                int docs = context.Documents.Count();
-                int cols = context.Collections.Count();
-                int keywords = context.Items.Count(i => !i.IsDeleted && i.ItemType == ItemType.Keyword);
-                int concepts = context.Items.Count(i => !i.IsDeleted && i.ItemType == ItemType.Concept);
+                int annotations = _ontologyContext.Annotations.Count(i => !i.IsDeleted);
+                int docs = _ontologyContext.Documents.Count();
+                int cols = _ontologyContext.Collections.Count();
+                int keywords = _ontologyContext.Items.Count(i => !i.IsDeleted && i.ItemType == ItemType.Keyword);
+                int concepts = _ontologyContext.Items.Count(i => !i.IsDeleted && i.ItemType == ItemType.Concept);
 
                 return new StatDataTile[]
                 {
@@ -84,9 +90,9 @@ namespace OntologyAPI.Controllers
         [HttpGet("recent")]
         public IEnumerable<object> GetRecent()
         {
-            using (VastOntologyContext context = new VastOntologyContext())
+            
             {
-                var annotations = context.Annotations.Where(i => !i.IsDeleted).OrderByDescending(i => i.Created).Take(3)
+                var annotations = _ontologyContext.Annotations.Where(i => !i.IsDeleted).OrderByDescending(i => i.Created).Take(3)
                     .Select(i => new
                     {
                         description = i.Description,

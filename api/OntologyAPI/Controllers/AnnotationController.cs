@@ -11,6 +11,12 @@ namespace OntologyAPI.Controllers
     [ApiController]
     public class AnnotationController : ControllerBase
     {
+        private VastOntologyContext _ontologyContext = null;
+        public AnnotationController(VastOntologyContext ontologyContext)
+        {
+            _ontologyContext=ontologyContext;
+        }
+
         [HttpGet("item")]
         public IEnumerable<object> Get(string? search = null, int? document = null, int? keywordConcept = null, int page = 1, int pageSize = 10)
         {
@@ -24,9 +30,9 @@ namespace OntologyAPI.Controllers
                 pageSize = 1;
             }
 
-            using (VastOntologyContext context = new VastOntologyContext())
+            
             {
-                var items = context.Annotations.Where(i => !i.IsDeleted);
+                var items = _ontologyContext.Annotations.Where(i => !i.IsDeleted);
                 if (document != null)
                 {
                     items = items.Where(i => i.Document.Id == document);
@@ -73,9 +79,9 @@ namespace OntologyAPI.Controllers
                 pageSize = 1;
             }
 
-            using (VastOntologyContext context = new VastOntologyContext())
+            
             {
-                IQueryable<Collection> items = context.Collections;
+                IQueryable<Collection> items = _ontologyContext.Collections;
                 if (!string.IsNullOrWhiteSpace(search))
                 {
                     string normalizedSearch = search.ToLower().Trim();
@@ -106,9 +112,9 @@ namespace OntologyAPI.Controllers
                 pageSize = 1;
             }
 
-            using (VastOntologyContext context = new VastOntologyContext())
+            
             {
-                IQueryable<Document> items = context.Documents;
+                IQueryable<Document> items = _ontologyContext.Documents;
                 if (collection != null)
                 {
                     items = items.Where(i => i.Collection.Id == collection);
