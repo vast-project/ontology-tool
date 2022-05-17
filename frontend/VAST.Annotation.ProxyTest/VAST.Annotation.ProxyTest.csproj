@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VAST.Annotation.Proxy\VAST.Annotation.Proxy.csproj" />
+    <ProjectReference Include="..\VAST.Ontology.Database\VAST.Ontology.Database.csproj" />
+  </ItemGroup>
+
+</Project>

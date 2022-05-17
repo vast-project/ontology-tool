@@ -1,0 +1,27 @@
+<div class="ann-view">
+  <div class="keywords-container">
+    <h1>Concepts</h1>
+    <input matInput placeholder="Search" value="" class="search-box" [(ngModel)]="searchKeywords" (keyup)="onKeyUpKey()" />
+    <perfect-scrollbar class="keywords-list">
+      <mat-list class="item" *ngFor="let item of (resultsKeywords | async)">
+        <p mat-list-item matLine (click)="onClickKey(item.id)">{{ item.name }}</p>
+      </mat-list>
+    </perfect-scrollbar>
+  </div>
+  <div class="annotations">
+    <h1>Related</h1>
+    <h2>Concepts</h2>
+    <h2>Keywords</h2>
+    <h2>Annotations</h2>
+    <input matInput placeholder="Search" value="" class="search-box" [(ngModel)]="searchAnnotations" (keyup)="onKeyUpAnn()" />
+    <perfect-scrollbar class="annotations-list">
+      <mat-list class="item" *ngFor="let item of (resultsAnnotations | async)">
+        <div mat-list-item matLine class="data">
+          <div class="keywords"><span class="keyword" *ngFor="let keyword of item.keywords">{{keyword.name}}</span></div>
+          <div class="description">{{item.description}}</div>
+          <div class="document">{{item.documentName}}</div>
+        </div>
+      </mat-list>
+    </perfect-scrollbar>
+  </div>
+</div>

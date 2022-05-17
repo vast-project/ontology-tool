@@ -1,0 +1,85 @@
+.designer {
+  height: 100%;
+  display: flex;
+  flex-flow: row;
+  display: flex;
+  flex-flow: row;
+
+  .mine {
+    width: 60%;
+    background-color: var(--background1);
+    padding: 10px 10px 10px 10px;
+
+    .my-statements {
+      .statement {
+        display: flex;
+        flex-flow: row;
+        border-bottom: 1px solid var(--foreground1);
+        padding-top: 8px;
+        padding-bottom: 10px;
+
+        .text {
+          flex: 1;
+        }
+
+        .icons {
+        }
+      }
+    }
+
+    .statement {
+      display: flex;
+      flex-flow: row;
+
+      input {
+        width: 100%;
+      }
+
+      .source {
+        display: flex;
+        flex: 1;
+        padding: 0 5px 0 5px;
+      }
+
+      .link-type {
+        display: flex;
+        flex: 1;
+        padding: 0 5px 0 5px;
+      }
+
+      .target {
+        display: flex;
+        flex: 1;
+        padding: 0 5px 0 5px;
+      }
+
+      .icons {
+        width: 40px;
+        padding-left: 6px;
+        padding-top: 2px;
+      }
+    }
+  }
+
+  .other {
+    flex: 1;
+    color: var(--foreground1);
+
+    .statement {
+      display: flex;
+      flex-flow: row;
+
+      .text {
+        flex: 1;
+      }
+
+      .icons {
+        display: flex;
+        flex-flow: row;
+        width: 60px;
+        padding-left: 6px;
+        padding-top: 2px;
+      }
+    }
+  }
+}
