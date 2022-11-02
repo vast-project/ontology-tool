@@ -31,6 +31,7 @@ import { ConceptsComponent } from './concepts/concepts.component';
 import { KeywordsComponent } from './keywords/keywords.component';
 import { DesignComponent } from './design/design.component';
 import { VisualizeComponent } from './visualize/visualize.component';
+import { VoteComponent } from './vote/vote.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -47,7 +48,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     ConceptsComponent,
     KeywordsComponent,
     DesignComponent,
-    VisualizeComponent
+    VisualizeComponent,
+    VoteComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: "ng-cli-universal" }),

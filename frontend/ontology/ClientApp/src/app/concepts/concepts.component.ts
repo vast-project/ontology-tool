@@ -27,7 +27,7 @@ export class ConceptsComponent implements OnInit {
   }
 
   onKeyUpKey(): void {
-    this.resultsKeywords=this.dataService.GetItems(this.searchKeywords);
+    this.resultsKeywords=this.dataService.GetItems(this.searchKeywords, 1);
   }
  
   onKeyUpAnn(): void {
