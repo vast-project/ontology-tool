@@ -133,5 +133,8 @@
 			}
 		}
 	},
-	"defaultProject": "ontology"
+  "defaultProject": "ontology",
+  "cli": {
+    "analytics": false
+  }
 }

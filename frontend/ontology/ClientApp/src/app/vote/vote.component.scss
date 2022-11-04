@@ -1,0 +1,108 @@
+.designer {
+  height: 100%;
+  display: flex;
+  flex-flow: row;
+  display: flex;
+  flex-flow: row;
+
+  .mine {
+    width: 100%;
+    background-color: var(--background1);
+    padding: 10px 10px 10px 10px;
+
+    .my-statements {
+      h1 {
+        padding-left: 6px;
+        padding-top: 10px;
+      }
+
+      .statement {
+        display: flex;
+        flex-flow: row;
+        border-bottom: 1px solid var(--foreground1);
+        padding-top: 8px;
+        padding-bottom: 10px;
+
+        .text {
+          flex: 1;
+        }
+      }
+
+      .icons {
+        width: 40px;
+        padding-left: 6px;
+        padding-top: 6px;
+      }
+    }
+
+    .statement {
+      display: flex;
+      flex-flow: row;
+
+      input {
+        width: 100%;
+      }
+
+      .source {
+        display: flex;
+        flex: 1;
+        padding: 0 5px 0 5px;
+      }
+
+      .link-type {
+        display: flex;
+        flex: 1;
+        padding: 0 5px 0 5px;
+      }
+
+      .target {
+        display: flex;
+        flex: 1;
+        padding: 0 5px 0 5px;
+      }
+
+      .add-icon {
+        padding-top: 2px;
+      }
+    }
+  }
+
+  .other {
+    h1 {
+      padding-left: 6px;
+      padding-top: 10px;
+    }
+
+    .statement {
+      display: flex;
+      flex-flow: row;
+      align-content: center;
+      align-items: center;
+      border-bottom: 2px solid rgba(0,0,0,0.05);
+      padding-top: 8px;
+      padding-bottom: 10px;
+      padding-left: 6px;
+      padding-right: 6px;
+
+      .text {
+        flex: 1;
+      }
+
+      .icons {
+        width: 120px;
+        padding-left: 6px;
+        padding-right: 6px;
+
+        .vote-count {
+          padding: 0 7px 0 7px;
+          display: inline-block;
+        }
+
+        .active {
+            color: var(--background2);
+        }
+      }
+
+    }
+  }
+}

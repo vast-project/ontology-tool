@@ -44,11 +44,11 @@ export class AnnotationsComponent implements OnInit {
     this.selectedColIndex = itemId;
     this.selectedDocIndex = 0;
     this.resultsDocuments=this.dataService.GetDocuments(this.searchDocuments, itemId);
-    this.resultsAnnotations=this.dataService.GetAnnotations(this.searchAnnotations, 0);
+    this.resultsAnnotations=this.dataService.GetAnnotations(this.searchAnnotations, 0, this.selectedColIndex);
   }
 
   onClickDoc(itemId: any) {
     this.selectedDocIndex = itemId;
-    this.resultsAnnotations=this.dataService.GetAnnotations(this.searchAnnotations, itemId);
+    this.resultsAnnotations=this.dataService.GetAnnotations(this.searchAnnotations, itemId, 0, 0);
   }
 }

@@ -75,6 +75,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
       { path: "concepts", component: ConceptsComponent },
       { path: "keywords", component: KeywordsComponent },
       { path: "design", component: DesignComponent },
+      { path: "vote", component: VoteComponent },
       { path: "visualize", component: VisualizeComponent },
     ])
   ],

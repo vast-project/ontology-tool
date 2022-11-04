@@ -46,7 +46,7 @@
           </ng-container>
         </mat-autocomplete>
       </div>
-      <mat-icon (click)="addStatement()">add</mat-icon>
+      <mat-icon class="add-icon" (click)="addStatement()">add</mat-icon>
     </div>
     <div class="my-statements">
       <h1>My Statements</h1>
@@ -55,24 +55,10 @@
           {{ Statement?.source?.name }} {{ Statement?.relationshipType?.name }} {{ Statement?.target?.name }}
         </div>
         <div class="icons">
-          <mat-icon>delete_forever</mat-icon>
+          <!--<mat-icon>delete_forever</mat-icon>-->
         </div>
 
       </div>
-    </div>
-  </div>
-
-  <div class="other">
-    <h1>Other Statements</h1>
-    <div class="statement" *ngFor="let Statement of otherStatements">
-      <div class="text">
-        {{ Statement?.source?.name }} {{ Statement?.relationshipType?.name }} {{ Statement?.target?.name }}
-      </div>
-      <div class="icons">
-        <mat-icon>thumb_down</mat-icon>
-        <mat-icon>thumb_up</mat-icon>
-      </div>
-
     </div>
   </div>
 </div>

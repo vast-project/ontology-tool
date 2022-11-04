@@ -54,7 +54,7 @@ namespace OntologyAPI.Controllers
                 }
                 var results = items.OrderBy(i => i.Id).Skip((page - 1) * pageSize).Take(pageSize).Select(i => new
                 {
-                    i.Name,
+                    Name=$"{i.Name} [{(i.ItemType == ItemType.Keyword ? "K" : "C")}]",
                     i.Value,
                     i.Description,
                     i.ItemType,

@@ -17,6 +17,13 @@ namespace OntologyAPI.Controllers
         public string? TargetName { get; set; }
         public string AuthorId { get; set; }
     }
+
+    public class VoteData
+    {
+        public int StatementId { get; set; }
+        public bool Negative { get; set; }
+    }
+
     [Route("api/[controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "ontology")]
     [ApiController]
@@ -55,7 +62,7 @@ namespace OntologyAPI.Controllers
         [HttpGet("")]
         public IEnumerable<object> GetAll(string? search = null, int? sourceId = null, int? targetId = null)
         {
-            
+
             {
                 var items = _ontologyContext.ItemLinks;
 
@@ -74,7 +81,7 @@ namespace OntologyAPI.Controllers
         [HttpGet("me")]
         public IEnumerable<object> GetMine(string? search = null, int? sourceId = null, int? targetId = null)
         {
-            
+
             {
                 var items = _ontologyContext.ItemLinks.Where(i => i.AuthorId == UserName || i.Votes.Any(v => v.AuthorId == UserName && v.DuplicateLink == true));
 
@@ -91,11 +98,30 @@ namespace OntologyAPI.Controllers
         }
 
         [HttpGet("other")]
-        public IEnumerable<object> GetOthers(string? search = null, int? sourceId = null, int? targetId = null)
+        public IEnumerable<object> GetOthers(string? search = null, int? sourceId = null, int? targetId = null, int? linkTypeId = null)
         {
-            
+
             {
                 var items = _ontologyContext.ItemLinks.Where(i => i.AuthorId != UserName);
+
+                if (!String.IsNullOrWhiteSpace(search))
+                {
+                    items = items.Where(i =>
+                        i.Source.Name.ToLower().Contains(search) || i.Target.Name.ToLower().Contains(search));
+                }
+
+                if (sourceId != null)
+                {
+                    items = items.Where(i => i.Source.Id == sourceId);
+                }
+                if (targetId != null)
+                {
+                    items = items.Where(i => i.Target.Id == targetId);
+                }
+                if (linkTypeId != null)
+                {
+                    items = items.Where(i => i.RelationshipType.Id == linkTypeId);
+                }
 
                 return items.Select(i => new
                 {
@@ -104,7 +130,11 @@ namespace OntologyAPI.Controllers
                     i.AuthorName,
                     Source = new { i.Source.Id, i.Source.ItemType, i.Source.Name },
                     Target = new { i.Target.Id, i.Target.ItemType, i.Target.Name },
-                    RelationshipType = new { i.RelationshipType.Name, i.RelationshipType.OntologyId, i.RelationshipType.Id }
+                    RelationshipType = new { i.RelationshipType.Name, i.RelationshipType.OntologyId, i.RelationshipType.Id },
+                    Voted = i.Votes.Any(v => v.AuthorId == UserName),
+                    Votes = i.Votes.Where(v => !v.Negative).Count() - i.Votes.Where(v => v.Negative).Count(),
+                    VotedUp = i.Votes.Any(v => v.AuthorId == UserName && v.Negative == false),
+                    VotedDown = i.Votes.Any(v => v.AuthorId == UserName && v.Negative == true)
                 }).ToList();
             }
         }
@@ -112,7 +142,7 @@ namespace OntologyAPI.Controllers
         [HttpGet("rel-types")]
         public IEnumerable<object> GetRelType(string? search = null)
         {
-            
+
             {
                 IQueryable<RelationshipType> items = _ontologyContext.RelationshipTypes;
                 if (!string.IsNullOrWhiteSpace(search))
@@ -125,6 +155,48 @@ namespace OntologyAPI.Controllers
             }
         }
 
+        [HttpPost("vote")]
+        public void Vote(VoteData data)
+        {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+            int id = data.StatementId;
+            bool negative = data.Negative;
+
+            if (id <= 0)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var existingItem = _ontologyContext.ItemLinks.FirstOrDefault(il => il.Id == id);
+            if (existingItem == null || existingItem.AuthorId == UserName)
+            {
+                throw new ArgumentException("The provided id does not exist or belongs to the user voting.");
+            }
+
+            var existingVote = _ontologyContext.Votes.SingleOrDefault(v => v.ItemLink.Id == existingItem.Id && v.AuthorId == UserName);
+            if (existingVote == null)
+            {
+                _ontologyContext.Votes.Add(new Vote
+                {
+                    Negative = negative,
+                    AuthorId = UserName,
+                    AuthorName = User?.Identity?.Name,
+                    CreatedDate = DateTime.Now.ToUniversalTime(),
+                    ItemLink = existingItem
+                });
+            }
+            else
+            {
+                existingVote.Negative = negative;
+                existingVote.CreatedDate = DateTime.Now.ToUniversalTime();
+            }
+
+            _ontologyContext.SaveChanges();
+        }
+
         // PUT api/<StatementController>/5
         [HttpPost()]
         public void Post([FromBody] StatementData value)
@@ -132,7 +204,7 @@ namespace OntologyAPI.Controllers
             if (value == null || (value.TargetId == null && value.TargetName == null))
                 throw new ArgumentNullException(nameof(value));
 
-            
+
             {
                 ItemLink addItem;
                 if (value.TargetId != null)
@@ -202,7 +274,7 @@ namespace OntologyAPI.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-            
+
             {
                 var itemToRemove = _ontologyContext.ItemLinks.Single(i => i.Id == id && i.AuthorId == UserName);
                 _ontologyContext.ItemLinks.Remove(itemToRemove);

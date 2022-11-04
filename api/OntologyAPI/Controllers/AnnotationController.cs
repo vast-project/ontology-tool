@@ -14,11 +14,11 @@ namespace OntologyAPI.Controllers
         private VastOntologyContext _ontologyContext = null;
         public AnnotationController(VastOntologyContext ontologyContext)
         {
-            _ontologyContext=ontologyContext;
+            _ontologyContext = ontologyContext;
         }
 
         [HttpGet("item")]
-        public IEnumerable<object> Get(string? search = null, int? document = null, int? keywordConcept = null, int page = 1, int pageSize = 10)
+        public IEnumerable<object> Get(string? search = null, int? document = null, int? keywordConcept = null, int? collection = null, int page = 1, int pageSize = 10)
         {
             if (page < 1)
             {
@@ -30,7 +30,7 @@ namespace OntologyAPI.Controllers
                 pageSize = 1;
             }
 
-            
+
             {
                 var items = _ontologyContext.Annotations.Where(i => !i.IsDeleted);
                 if (document != null)
@@ -41,12 +41,18 @@ namespace OntologyAPI.Controllers
                 {
                     items = items.Where(i => i.AnnotationItem.Any(ai => ai.Id == keywordConcept));
                 }
+
                 if (!string.IsNullOrWhiteSpace(search))
                 {
                     string normalizedSearch = search.ToLower().Trim();
                     items = items.Where(i =>
                         i.Description.ToLower().Contains(normalizedSearch) || i.AnnotationItem.Any(ai =>
                             !ai.IsDeleted && ai.Name.ToLower().Contains(normalizedSearch)));
+                }
+
+                if (collection != null)
+                {
+                    items = items.Where(i => i.Document.Collection.Id == collection);
                 }
 
                 var results = items.OrderBy(i => i.Id).Skip((page - 1) * pageSize).Take(pageSize).Select(i => new
@@ -79,7 +85,7 @@ namespace OntologyAPI.Controllers
                 pageSize = 1;
             }
 
-            
+
             {
                 IQueryable<Collection> items = _ontologyContext.Collections;
                 if (!string.IsNullOrWhiteSpace(search))
@@ -112,7 +118,7 @@ namespace OntologyAPI.Controllers
                 pageSize = 1;
             }
 
-            
+
             {
                 IQueryable<Document> items = _ontologyContext.Documents;
                 if (collection != null)

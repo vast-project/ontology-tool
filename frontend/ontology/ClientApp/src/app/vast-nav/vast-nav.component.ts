@@ -18,8 +18,8 @@ export class VastNavComponent implements OnInit {
     { link: "annotations", name: "Annotations", icon: "texture" },
     { link: "keywords", name: "Keywords", icon: "gamepad" },
     { link: "concepts", name: "Concepts", icon: "style" },
-    { link: "design", name: "Statements", icon: "storage" },
-    { link: "vote", name: "Statements", icon: "storage" },
+    { link: "design", name: "Design", icon: "storage" },
+    { link: "vote", name: "Vote", icon: "how_to_vote" },
     { link: "visualize", name: "Explore", icon: "device_hub" },
   ];
 

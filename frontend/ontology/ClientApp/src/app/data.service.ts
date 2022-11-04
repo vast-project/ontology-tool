@@ -12,6 +12,7 @@ export class DataService {
   });
 
   private REST_API_SERVER = "https://ontology.vast-project.eu";
+  //private REST_API_SERVER = "https://localhost:7164";
 
   constructor(private httpClient: HttpClient, private tokenService: TokenService) { }
 
@@ -36,7 +37,7 @@ export class DataService {
 
   }
 
-  public GetAnnotations(search: string, docid: number = 0, keyId:number=0) {
+  public GetAnnotations(search: string, docid: number = 0, keyId: number = 0, colId: number = 0) {
     var url: string = this.REST_API_SERVER + "/api/annotation/item?search=" + search;
     if (docid > 0) {
       url = url + "&document=" + docid;
@@ -44,12 +45,15 @@ export class DataService {
     if (keyId > 0) {
       url = url + "&keywordConcept=" + keyId;
     }
+    if (colId > 0) {
+      url = url + "&collection=" + colId;
+    }
 
     return this.httpClient.get(url);
   }
 
-  public GetItems(search: string, itemType:number=0) {
-    var url: string = this.REST_API_SERVER + "/api/item?search=" + search + "&type="+itemType+"&pageSize=150";
+  public GetItems(search: string, itemType: number = 0) {
+    var url: string = this.REST_API_SERVER + "/api/item?search=" + search + "&type=" + itemType + "&pageSize=150";
 
     return this.httpClient.get(url);
   }
@@ -60,18 +64,27 @@ export class DataService {
     return this.httpClient.get(url);
   }
 
-  public GetLinks(search: string, sourceId:number=0, targetId:number=0) {
+  public GetLinks(search: string, sourceId: number = 0, targetId: number = 0) {
     var url: string = this.REST_API_SERVER + "/api/statement?search=" + search;
 
     return this.httpClient.get(url);
   }
-  public GetOwnLinks(search: string, sourceId:number=0, targetId:number=0) {
+  public GetOwnLinks(search: string, sourceId: number = 0, targetId: number = 0) {
     var url: string = this.REST_API_SERVER + "/api/statement/me?search=" + search;
 
     return this.httpClient.get(url);
   }
-  public GetOtherLinks(search: string, sourceId:number=0, targetId:number=0) {
+  public GetOtherLinks(search: string, sourceId: number = 0, targetId: number = 0, linkTypeId: number = 0) {
     var url: string = this.REST_API_SERVER + "/api/statement/other?search=" + search;
+    if (sourceId > 0) {
+      url = url + "&sourceId=" + sourceId;
+    }
+    if (targetId > 0) {
+      url = url + "&targetId=" + targetId;
+    }
+    if (linkTypeId > 0) {
+      url = url + "&linkTypeId=" + linkTypeId;
+    }
 
     return this.httpClient.get(url);
   }
@@ -80,5 +93,14 @@ export class DataService {
     var url: string = this.REST_API_SERVER + "/api/statement";
 
     return this.httpClient.post(url, statement);
+  }
+
+  public Vote(statementId: number, negative: boolean) {
+    var url: string = this.REST_API_SERVER + "/api/statement/vote";
+
+    return this.httpClient.post(url, {
+      statementId: statementId,
+      negative: negative
+    });
   }
 }

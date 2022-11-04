@@ -75,10 +75,6 @@ export class DesignComponent implements OnInit {
     this.dataService.GetOwnLinks("").subscribe(data => {
       this.myStatements = data;
     });
-    this.dataService.GetOtherLinks("").subscribe(data => {
-      this.otherStatements = data;
-    });
-
   }
 
   addStatement() {
