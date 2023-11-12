@@ -17,6 +17,10 @@
     overflow: hidden;
   }
 
+  .active {
+    color: var(--background2);
+    font-weight: bold;
+  }
 
 
   .annotations {
@@ -24,6 +28,14 @@
     height: 100%;
     padding: 33px 56px 0 56px;
     overflow: hidden;
+
+    .explainer {
+      font-size: 10px;
+    }
+
+    .toolbar {
+      text-align: right;
+    }
 
     .item {
       .data {

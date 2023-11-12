@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit } from "@angular/core";
-import { AuthService} from '../auth.service';
-import { TokenService} from '../token.service';
+import { AuthService } from '../auth.service';
+import { TokenService } from '../token.service';
 
 @Component({
   selector: 'app-vast-nav',
@@ -11,27 +11,38 @@ export class VastNavComponent implements OnInit {
   @Input() isExpanded: boolean = false;
   @Output() toggleMenu = new EventEmitter();
 
-  constructor(private _authService: AuthService, private _tokenService : TokenService) { }
+  public showLogin: boolean = false;
+
+  constructor(private _authService: AuthService, private _tokenService: TokenService) { }
 
   public routeLinks = [
     { link: "", name: "Dashboard", icon: "dashboard" },
     { link: "annotations", name: "Annotations", icon: "texture" },
     { link: "keywords", name: "Keywords", icon: "gamepad" },
     { link: "concepts", name: "Concepts", icon: "style" },
-    { link: "design", name: "Design", icon: "storage" },
-    { link: "vote", name: "Vote", icon: "how_to_vote" },
-    { link: "visualize", name: "Explore", icon: "device_hub" },
+    //{ link: "design", name: "Design", icon: "storage" },
+    //{ link: "vote", name: "Vote", icon: "how_to_vote" },
+    //{ link: "visualize", name: "Explore", icon: "device_hub" },
   ];
 
   ngOnInit(): void {
+    this.showLogin = this._authService.isAuthenticated;
   }
 
-  public isAuthenticated = () : boolean => {
+  public isAuthenticated = (): boolean => {
     return this._authService.isAuthenticated;
   }
 
   public login = () => {
     this._authService.login();
+  }
+
+  public logout = () => {
+    this._authService.logout();
+  }
+
+  public goToPlatform = () => {
+    window.location.href = "https://platform.vast-project.eu";
   }
 
 }

@@ -18,8 +18,14 @@ namespace OntologyAPI.Controllers
         }
 
         [HttpGet("item")]
-        public IEnumerable<object> Get(string? search = null, int? document = null, int? keywordConcept = null, int? collection = null, int page = 1, int pageSize = 10)
+        public IEnumerable<object> Get(string? search = null, int? document = null, int? keywordConcept = null, int? collection = null, int page = 1, int pageSize = 1000, int expand = 0)
         {
+            if (document == null && keywordConcept == null)
+            {
+                return new List<object>();
+                Console.WriteLine("No document or keywordConcept provided");
+            }
+
             if (page < 1)
             {
                 page = 1;
@@ -39,7 +45,17 @@ namespace OntologyAPI.Controllers
                 }
                 if (keywordConcept != null)
                 {
-                    items = items.Where(i => i.AnnotationItem.Any(ai => ai.Id == keywordConcept));
+                    if (expand == 0)
+                    {
+                        items = items.Where(i => i.AnnotationItem.Any(ai => ai.Id == keywordConcept));
+                    }
+                    else
+                    {
+                        items = items.Where(i => i.AnnotationItem.Any(ai => ai.Id == keywordConcept) ||
+                                                 i.AnnotationItem.Any(ai => ai.SourceLinks.Any(tl=>tl.Target.Id == keywordConcept && tl.Target.ItemType==ItemType.Concept))
+                        
+                        );
+                    }
                 }
 
                 if (!string.IsNullOrWhiteSpace(search))
@@ -59,6 +75,7 @@ namespace OntologyAPI.Controllers
                 {
                     DocumentName = i.Document.Name,
                     CollectionName = i.Document.Collection.Name,
+                    CollectionId = i.Document.Collection.OriginalId,
                     i.Description,
                     i.IsImported,
                     i.OriginalId,
@@ -108,6 +125,11 @@ namespace OntologyAPI.Controllers
         [HttpGet("document")]
         public IEnumerable<object> GetDocuments(string? search = null, int? collection = null, int page = 1, int pageSize = 100)
         {
+            if (collection == null)
+            {
+                return new List<object>();
+            }
+
             if (page < 1)
             {
                 page = 1;

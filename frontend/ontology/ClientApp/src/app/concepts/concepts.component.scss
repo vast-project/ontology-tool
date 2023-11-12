@@ -17,13 +17,46 @@
     overflow: hidden;
   }
 
-
+  .active {
+    color: var(--background3);
+    font-weight: bold;
+  }
 
   .annotations {
     flex: 1;
     height: 100%;
     padding: 33px 56px 0 56px;
     overflow: hidden;
+
+    .explainer {
+      font-size: 10px;
+    }
+
+    .toolbar {
+      text-align: right;
+    }
+
+    .related-keywords {
+      padding-bottom: 15px;
+
+      .keyword {
+        width: 100px;
+        height: 22px;
+        padding: 0 9px 2px;
+        border-radius: 12px;
+        background-color: var(--background4);
+        height: 20px;
+        font-family: var(--font1);
+        font-size: 15px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: #fff;
+        margin-right: 5px;
+      }
+    }
 
     .item {
       .data {
@@ -48,6 +81,7 @@
             line-height: normal;
             letter-spacing: normal;
             color: #fff;
+            cursor: pointer;
           }
         }
 

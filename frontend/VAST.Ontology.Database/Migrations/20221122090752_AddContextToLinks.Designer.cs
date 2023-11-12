@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VAST.Ontology.Database;
@@ -11,9 +12,11 @@ using VAST.Ontology.Database;
 namespace VAST.Ontology.Database.Migrations
 {
     [DbContext(typeof(VastOntologyContext))]
-    partial class VastOntologyContextModelSnapshot : ModelSnapshot
+    [Migration("20221122090752_AddContextToLinks")]
+    partial class AddContextToLinks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -379,8 +382,10 @@ namespace VAST.Ontology.Database.Migrations
             modelBuilder.Entity("VAST.Ontology.Database.Models.ItemLink", b =>
                 {
                     b.HasOne("VAST.Ontology.Database.Models.Context", "PrimaryContext")
-                        .WithMany("PrimaryItemLinks")
-                        .HasForeignKey("PrimaryContextId");
+                        .WithMany()
+                        .HasForeignKey("PrimaryContextId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("VAST.Ontology.Database.Models.RelationshipType", "RelationshipType")
                         .WithMany()
@@ -427,8 +432,6 @@ namespace VAST.Ontology.Database.Migrations
 
             modelBuilder.Entity("VAST.Ontology.Database.Models.Context", b =>
                 {
-                    b.Navigation("PrimaryItemLinks");
-
                     b.Navigation("PrimaryItems");
                 });
 

@@ -28,49 +28,70 @@ namespace OntologyAPI.Controllers
 
         // GET: api/<ItemController>
         [HttpGet("")]
-        public IEnumerable<object> Get(ItemType type = ItemType.Keyword, string? search = null, int page = 1, int pageSize = 10)
+        public IEnumerable<object> Get(ItemType type = ItemType.Keyword, string? search = null, int context = 0, int page = 1, int pageSize = 10, int keywordConcept = 0)
         {
+            //Sanity check for page parameters
             if (page < 1)
             {
                 page = 1;
             }
-
             if (pageSize < 1)
             {
                 pageSize = 1;
             }
-
-            
+            //Sanity check for context
+            if (context < 0)
             {
-                var items = _ontologyContext.Items.Where(i => !i.IsDeleted);
-                if (type != ItemType.Unknown)
-                {
-                    items = items.Where(i => i.ItemType == type);
-                }
-                if (!string.IsNullOrWhiteSpace(search))
-                {
-                    string normalizedSearch = search.ToLower().Trim();
-                    items = items.Where(i => i.Name.ToLower().Contains(normalizedSearch));
-                }
-                var results = items.OrderBy(i => i.Id).Skip((page - 1) * pageSize).Take(pageSize).Select(i => new
-                {
-                    Name=$"{i.Name} [{(i.ItemType == ItemType.Keyword ? "K" : "C")}]",
-                    i.Value,
-                    i.Description,
-                    i.ItemType,
-                    i.Id,
-                    i.IsImported,
-                    i.IsInSchema
-                }).ToList();
-
-                return results;
+                context = 0;
             }
+
+            //Filter out deleted items
+            var items = _ontologyContext.Items.Where(i => !i.IsDeleted);
+
+            //If a type filter is provided, filter by specific item type
+            if (type != ItemType.Unknown)
+            {
+                items = items.Where(i => i.ItemType == type);
+            }
+
+            if (keywordConcept > 0)
+            {
+                items = items.Where(i => i.SourceLinks.Any(tl => tl.Target.Id == keywordConcept));
+            }
+
+            //If a search string is provided, filter by the search string
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                string normalizedSearch = search.ToLower().Trim();
+                items = items.Where(i => i.Name.ToLower().Contains(normalizedSearch));
+            }
+
+            //If a context is provided, filter by the context
+            if (context > 0)
+            {
+                items = items.Where(i => i.PrimaryContext.Id == context || i.Contexts.Any(c => c.Id == context));
+            }
+
+            //return the results
+            var results = items.OrderBy(i => i.Id).Skip((page - 1) * pageSize).Take(pageSize).Select(i => new
+            {
+                Name = $"{i.Name} [{(i.ItemType == ItemType.Keyword ? "K" : "C")}]",
+                i.Value,
+                i.Description,
+                i.ItemType,
+                i.Id,
+                i.IsImported,
+                i.IsInSchema,
+            }).ToList();
+
+            return results;
+
         }
 
         [HttpGet("stats")]
         public object GetStats()
         {
-            
+
             {
                 int annotations = _ontologyContext.Annotations.Count(i => !i.IsDeleted);
                 int docs = _ontologyContext.Documents.Count();
@@ -90,7 +111,7 @@ namespace OntologyAPI.Controllers
         [HttpGet("recent")]
         public IEnumerable<object> GetRecent()
         {
-            
+
             {
                 var annotations = _ontologyContext.Annotations.Where(i => !i.IsDeleted).OrderByDescending(i => i.Created).Take(3)
                     .Select(i => new

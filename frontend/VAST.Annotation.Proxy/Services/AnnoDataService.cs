@@ -87,6 +87,7 @@ namespace VAST.Annotation.Proxy.Services
                 collectionResponse = await dataServiceClient.GetAsync(collectionEndpoint);
             }
 
+            string strResult = await collectionResponse.Content.ReadAsStringAsync();
 
             CollectionListResponse? responseData = await collectionResponse.Content.ReadFromJsonAsync<CollectionListResponse>();
             if (responseData != null && responseData.success)

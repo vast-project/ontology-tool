@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { debounceTime, tap, switchMap, finalize, distinctUntilChanged, filter } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { DataService } from '../data.service'
+import { DataService } from '../data.service';
+import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-design',
@@ -29,8 +30,15 @@ export class DesignComponent implements OnInit {
   minLengthTerm = 0;
 
   constructor(
-    private dataService: DataService
+    private dataService: DataService,
+    private _snackBar: MatSnackBar
   ) { }
+
+  showMessage(message: string) {
+    this._snackBar.open(message, undefined, {
+      duration: 7000,
+    });
+  }
 
   displayWith(value: any) {
     return value?.name;
@@ -88,14 +96,36 @@ export class DesignComponent implements OnInit {
       targetId: this.selectedConcept?.id,
       targetName: sourceName,
       relationshipId: this.selectedLink?.id,
-      authorId: "1"
-    }).subscribe(data => {
-      this.clearSelectionConcept();
-      this.clearSelectionKeyword();
-      this.clearSelectionLink();
-      this.loadStatements();
-    });
+      authorId: "invalid",
+      contextId: this.dataService.GetCurrentContext(),
+    }).subscribe(
+      data => {
+        this.clearSelectionConcept();
+        this.clearSelectionKeyword();
+        this.clearSelectionLink();
+        this.loadStatements();
+        this.showMessage("Statement saved!");
+      },
+      error => {
+        this.showMessage("Error while saving: " + error);
+      }
+    );
 
+  }
+
+  deleteStatement(id: number) {
+     this.dataService.DeleteStatement(id).subscribe(
+      data => {
+        this.clearSelectionConcept();
+        this.clearSelectionKeyword();
+        this.clearSelectionLink();
+        this.loadStatements();
+         this.showMessage("Statement deleted!");
+      },
+      error => {
+        this.showMessage("Error while deleting: " + error);
+      }
+    );
   }
 
   ngOnInit() {

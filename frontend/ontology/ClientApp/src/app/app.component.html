@@ -10,11 +10,20 @@
     <mat-sidenav-content [style.margin-left.px]="!isSideNavExpanded ? 67 : 280">
       <header>
         <span class="title">
-          Ontology Visualization & Design
+          Cultural Heritage Artefacts
+        </span>
+        <span class="context">
+          <mat-select [(ngModel)]="selectedContext" (selectionChange)="changeContext($event.value)" [compareWith]="compareContexts">
+            <mat-option [value]="0">Everything</mat-option>
+            <mat-option [value]="1">Archive</mat-option>
+            <mat-option [value]="2">Past of Values (Pilot 1)</mat-option>
+            <mat-option [value]="3">Past of Values (Pilot 2)</mat-option>
+            <mat-option [value]="4">Past of Values (Pilot 3)</mat-option>
+          </mat-select>
         </span>
 
       </header>
-      <hr/>
+      <hr />
       <div class="content-container">
         <router-outlet></router-outlet>
       </div>

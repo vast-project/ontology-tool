@@ -14,6 +14,9 @@ import { BrowserAnimationsModule  } from '@angular/platform-browser/animations'
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatSelectModule } from "@angular/material/select";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
+
 
 import { AppComponent } from "./app.component";
 import { HomeComponent } from "./home/home.component";
@@ -58,11 +61,13 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     ReactiveFormsModule,
     MatFormFieldModule,
     MatButtonModule,
+    MatSnackBarModule,
     MatMenuModule,
     MatToolbarModule,
     MatIconModule,
     MatCardModule,
     MatSidenavModule,
+    MatSelectModule,
     MatListModule,
     MatTooltipModule,
     BrowserAnimationsModule,
@@ -74,9 +79,10 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
       { path: "annotations", component: AnnotationsComponent },
       { path: "concepts", component: ConceptsComponent },
       { path: "keywords", component: KeywordsComponent },
-      { path: "design", component: DesignComponent },
-      { path: "vote", component: VoteComponent },
-      { path: "visualize", component: VisualizeComponent },
+      { path: "keywords/:keyword", component: KeywordsComponent },
+      //{ path: "design", component: DesignComponent },
+      //{ path: "vote", component: VoteComponent },
+      //{ path: "visualize", component: VisualizeComponent },
     ])
   ],
   providers: [

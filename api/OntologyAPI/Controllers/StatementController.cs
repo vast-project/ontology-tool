@@ -1,7 +1,9 @@
-﻿using System.Security.Claims;
+﻿using System.Security.Authentication;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using VAST.Ontology.Database;
 using VAST.Ontology.Database.Models;
 
@@ -16,6 +18,7 @@ namespace OntologyAPI.Controllers
         public int RelationshipId { get; set; }
         public string? TargetName { get; set; }
         public string AuthorId { get; set; }
+        public int ContextId { get; set; } = 0;
     }
 
     public class VoteData
@@ -60,11 +63,17 @@ namespace OntologyAPI.Controllers
 
         // GET: api/<StatementController>
         [HttpGet("")]
-        public IEnumerable<object> GetAll(string? search = null, int? sourceId = null, int? targetId = null)
+        public IEnumerable<object> GetAll(string? search = null, int? sourceId = null, int? targetId = null, int context = 0)
         {
 
             {
-                var items = _ontologyContext.ItemLinks;
+                IQueryable<ItemLink> items = _ontologyContext.ItemLinks;
+
+                //If a context is provided, filter by the context
+                if (context > 0)
+                {
+                    items = items.Where(i => i.PrimaryContext.Id == context);
+                }
 
                 return items.Select(i => new
                 {
@@ -73,17 +82,26 @@ namespace OntologyAPI.Controllers
                     i.AuthorName,
                     Source = new { i.Source.Id, i.Source.ItemType, i.Source.Name },
                     Target = new { i.Target.Id, i.Target.ItemType, i.Target.Name },
-                    RelationshipType = new { i.RelationshipType.Name, i.RelationshipType.OntologyId, i.RelationshipType.Id }
+                    RelationshipType = new { i.RelationshipType.Name, i.RelationshipType.OntologyId, i.RelationshipType.Id },
                 }).ToList();
             }
         }
 
         [HttpGet("me")]
-        public IEnumerable<object> GetMine(string? search = null, int? sourceId = null, int? targetId = null)
+        public IEnumerable<object> GetMine(string? search = null, int? sourceId = null, int? targetId = null, int context = 0)
         {
 
             {
-                var items = _ontologyContext.ItemLinks.Where(i => i.AuthorId == UserName || i.Votes.Any(v => v.AuthorId == UserName && v.DuplicateLink == true));
+                IQueryable<ItemLink> items = _ontologyContext.ItemLinks.Where(i => i.AuthorId == UserName || i.Votes.Any(v => v.AuthorId == UserName && v.DuplicateLink == true));
+                //If a context is provided, filter by the context
+                if (context > 0)
+                {
+                    items = items.Where(i => i.PrimaryContext.Id == context);
+                }
+                else
+                {
+                    items = items.Where(c => c.PrimaryContext.Id != -1);
+                }
 
                 return items.Select(i => new
                 {
@@ -98,18 +116,27 @@ namespace OntologyAPI.Controllers
         }
 
         [HttpGet("other")]
-        public IEnumerable<object> GetOthers(string? search = null, int? sourceId = null, int? targetId = null, int? linkTypeId = null)
+        public IEnumerable<object> GetOthers(string? search = null, int? sourceId = null, int? targetId = null, int? linkTypeId = null, int context = 0)
         {
 
             {
-                var items = _ontologyContext.ItemLinks.Where(i => i.AuthorId != UserName);
+                IQueryable<ItemLink> items = _ontologyContext.ItemLinks.Where(i => i.AuthorId != UserName);
+
+                //If a context is provided, filter by the context
+                if (context > 0)
+                {
+                    items = items.Where(i => i.PrimaryContext.Id == context);
+                }
+                else
+                {
+                    items = items.Where(c => c.PrimaryContext.Id != -1);
+                }
 
                 if (!String.IsNullOrWhiteSpace(search))
                 {
                     items = items.Where(i =>
                         i.Source.Name.ToLower().Contains(search) || i.Target.Name.ToLower().Contains(search));
                 }
-
                 if (sourceId != null)
                 {
                     items = items.Where(i => i.Source.Id == sourceId);
@@ -140,7 +167,7 @@ namespace OntologyAPI.Controllers
         }
 
         [HttpGet("rel-types")]
-        public IEnumerable<object> GetRelType(string? search = null)
+        public IEnumerable<object> GetRelType(string? search = null, int context = 0)
         {
 
             {
@@ -148,6 +175,11 @@ namespace OntologyAPI.Controllers
                 if (!string.IsNullOrWhiteSpace(search))
                 {
                     items = items.Where(x => x.Name.ToLower().Contains(search.ToLower()));
+                }
+
+                if (context >= 2 && context <= 4)
+                {
+                    items = items.Where(x => x.Id == 4);
                 }
 
                 var results = items.Select(i => new { i.Id, i.Name, i.OntologyId });
@@ -183,7 +215,7 @@ namespace OntologyAPI.Controllers
                 {
                     Negative = negative,
                     AuthorId = UserName,
-                    AuthorName = User?.Identity?.Name,
+                    AuthorName = User?.Identity?.Name ?? UserName,
                     CreatedDate = DateTime.Now.ToUniversalTime(),
                     ItemLink = existingItem
                 });
@@ -201,84 +233,92 @@ namespace OntologyAPI.Controllers
         [HttpPost()]
         public void Post([FromBody] StatementData value)
         {
-            if (value == null || (value.TargetId == null && value.TargetName == null))
+            if (value == null || (value.TargetId == null && String.IsNullOrWhiteSpace(value.TargetName)))
                 throw new ArgumentNullException(nameof(value));
 
 
+            ItemLink addItem;
+            if (value.TargetId != null)
             {
-                ItemLink addItem;
-                if (value.TargetId != null)
+                var existingItem = _ontologyContext.ItemLinks.FirstOrDefault(il => il.Source.Id == value.SourceId && il.Target.Id == value.TargetId && il.RelationshipType.Id == value.RelationshipId && il.PrimaryContext.Id == value.ContextId && il.AuthorId == UserName);
+                if (existingItem != null)
                 {
-                    var existingItem = _ontologyContext.ItemLinks.FirstOrDefault(il => il.Source.Id == value.SourceId && il.Target.Id == value.TargetId && il.RelationshipType.Id == value.RelationshipId);
-                    if (existingItem != null)
+                    if (existingItem.AuthorId == UserName)
                     {
-                        if (existingItem.AuthorId != UserName)
-                        {
-                            var existingVote = _ontologyContext.Votes.FirstOrDefault(v =>
-                                v.AuthorId == UserName && v.ItemLink.Id == existingItem.Id);
-                            if (existingVote == null)
-                            {
-                                _ontologyContext.Votes.Add(new Vote()
-                                {
-                                    AuthorId = UserName,
-                                    AuthorName = User.Identity.Name,
-                                    CreatedDate = DateTime.Now.ToUniversalTime(),
-                                    DuplicateLink = true,
-                                    ItemLink = existingItem,
-                                });
-                            }
-                        }
-                    }
-                    else
-                    {
-                        addItem = new ItemLink
-                        {
-                            AuthorId = UserName,
-                            AuthorName = User.Identity.Name,
-                            CreatedDate = DateTime.Now.ToUniversalTime(),
-                            Source = _ontologyContext.Items.Single(i => i.Id == value.SourceId),
-                            Target = _ontologyContext.Items.Single(i => i.Id == value.TargetId),
-                            RelationshipType = _ontologyContext.RelationshipTypes.Single(rt => rt.Id == value.RelationshipId),
-                        };
-                        _ontologyContext.ItemLinks.Add(addItem);
+                        throw new ArgumentException("Statement already exists.");
                     }
                 }
                 else
                 {
-                    var addConcept = new Item()
-                    {
-                        ItemType = ItemType.Concept,
-                        Name = value.TargetName,
-                        Description = "",
-                        LastSyncTime = DateTime.Now.ToUniversalTime(),
-                        Value = value.TargetName.ToLower().Replace("/", "_").Replace(" ", "_")
-                    };
-                    _ontologyContext.Items.Add(addConcept);
                     addItem = new ItemLink
                     {
                         AuthorId = UserName,
-                        AuthorName = User.Identity.Name,
+                        AuthorName = User?.Identity?.Name ?? UserName,
                         CreatedDate = DateTime.Now.ToUniversalTime(),
                         Source = _ontologyContext.Items.Single(i => i.Id == value.SourceId),
-                        Target = addConcept,
-                        RelationshipType = _ontologyContext.RelationshipTypes.Single(rt => rt.Id == value.RelationshipId)
+                        Target = _ontologyContext.Items.Single(i => i.Id == value.TargetId),
+                        RelationshipType = _ontologyContext.RelationshipTypes.Single(rt => rt.Id == value.RelationshipId),
+                        PrimaryContext = value.ContextId <= 0 ? null : _ontologyContext.Contexts.Single(c => c.Id == value.ContextId)
                     };
                     _ontologyContext.ItemLinks.Add(addItem);
                 }
-
-                _ontologyContext.SaveChanges();
             }
+            else
+            {
+                Item addConcept = _ontologyContext.Items.Where(i =>
+                    i.Name.Trim().ToLower() == value.TargetName.ToLower().Trim() && i.ItemType == ItemType.Concept).Include(c => c.Contexts).FirstOrDefault();
+                if (addConcept == null)
+                {
+                    addConcept = new Item()
+                    {
+                        ItemType = ItemType.Concept,
+                        Name = value.TargetName.Trim(),
+                        Description = "",
+                        LastSyncTime = DateTime.Now.ToUniversalTime(),
+                        Value = value.TargetName.ToLower().Replace("/", "_").Replace(" ", "_"),
+                        PrimaryContext = value.ContextId <= 0 ? null : _ontologyContext.Contexts.Single(c => c.Id == value.ContextId)
+                    };
+                    _ontologyContext.Items.Add(addConcept);
+                }
+                else
+                {
+                    if (!_ontologyContext.Items.Any(i => i.Id == addConcept.Id && i.Contexts.Any(c => c.Id == value.ContextId)))
+                    {
+                        addConcept.Contexts.Add(_ontologyContext.Contexts.Single(c => c.Id == value.ContextId));
+                    }
+                }
+
+                addItem = new ItemLink
+                {
+                    AuthorId = UserName,
+                    AuthorName = User?.Identity?.Name ?? UserName,
+                    CreatedDate = DateTime.Now.ToUniversalTime(),
+                    Source = _ontologyContext.Items.Single(i => i.Id == value.SourceId),
+                    Target = addConcept,
+                    RelationshipType = _ontologyContext.RelationshipTypes.Single(rt => rt.Id == value.RelationshipId),
+                    PrimaryContext = value.ContextId <= 0 ? null : _ontologyContext.Contexts.Single(c => c.Id == value.ContextId),
+
+                };
+                _ontologyContext.ItemLinks.Add(addItem);
+            }
+
+            _ontologyContext.SaveChanges();
+
         }
 
         // DELETE api/<StatementController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-
+            try
             {
                 var itemToRemove = _ontologyContext.ItemLinks.Single(i => i.Id == id && i.AuthorId == UserName);
                 _ontologyContext.ItemLinks.Remove(itemToRemove);
                 _ontologyContext.SaveChanges();
+            }
+            catch (Exception)
+            {
+                throw new AuthenticationException();
             }
         }
     }

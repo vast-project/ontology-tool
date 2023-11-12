@@ -19,10 +19,10 @@ namespace VAST.Annotation.Proxy.Data
         public string name { get; set; }
         public string handler { get; set; }
         public string encoding { get; set; }
-        public int owner_id { get; set; }
-        public int confirmed { get; set; }
-        public int is_owner { get; set; }
-        public int document_count { get; set; }
+        public int? owner_id { get; set; }
+        public int? confirmed { get; set; }
+        public int? is_owner { get; set; }
+        public int? document_count { get; set; }
     }
 
 }

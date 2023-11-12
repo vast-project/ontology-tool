@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VAST.Ontology.Database;
@@ -11,9 +12,11 @@ using VAST.Ontology.Database;
 namespace VAST.Ontology.Database.Migrations
 {
     [DbContext(typeof(VastOntologyContext))]
-    partial class VastOntologyContextModelSnapshot : ModelSnapshot
+    [Migration("20221122092626_AddContextToLinks2")]
+    partial class AddContextToLinks2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { TokenService } from './token.service';
 
+const CURRENT_CONTEXT = "vast_current_context"
+
 @Injectable({
   providedIn: 'root'
 })
@@ -11,10 +13,19 @@ export class DataService {
     'Authorization': `Bearer ${this.tokenService.getToken()}`
   });
 
+
   private REST_API_SERVER = "https://ontology.vast-project.eu";
   //private REST_API_SERVER = "https://localhost:7164";
 
   constructor(private httpClient: HttpClient, private tokenService: TokenService) { }
+
+  public GetCurrentContext(): number {
+    return +(localStorage.getItem(CURRENT_CONTEXT) || "0");
+  }
+
+  public SetCurrentContext(token: number): void {
+    localStorage.setItem(CURRENT_CONTEXT, token.toString());
+  }
 
   public GetMainStats() {
     return this.httpClient.get(this.REST_API_SERVER + "/api/item/stats");
@@ -38,7 +49,7 @@ export class DataService {
   }
 
   public GetAnnotations(search: string, docid: number = 0, keyId: number = 0, colId: number = 0) {
-    var url: string = this.REST_API_SERVER + "/api/annotation/item?search=" + search;
+    var url: string = this.REST_API_SERVER + "/api/annotation/item?expand=1&search=" + search;
     if (docid > 0) {
       url = url + "&document=" + docid;
     }
@@ -49,33 +60,37 @@ export class DataService {
       url = url + "&collection=" + colId;
     }
 
+
     return this.httpClient.get(url);
   }
 
-  public GetItems(search: string, itemType: number = 0) {
-    var url: string = this.REST_API_SERVER + "/api/item?search=" + search + "&type=" + itemType + "&pageSize=150";
-
+  public GetItems(search: string, itemType: number = 0, targetId: number = 0) {
+    var url: string = this.REST_API_SERVER + "/api/item?search=" + search + "&type=" + itemType + "&keywordConcept=" + targetId + "&pageSize=150";
+    url = url + "&context=" + this.GetCurrentContext();
     return this.httpClient.get(url);
   }
 
   public GetLinkTypes(search: string) {
     var url: string = this.REST_API_SERVER + "/api/statement/rel-types?search=" + search;
-
+    url = url + "&context=" + this.GetCurrentContext();
     return this.httpClient.get(url);
   }
 
   public GetLinks(search: string, sourceId: number = 0, targetId: number = 0) {
     var url: string = this.REST_API_SERVER + "/api/statement?search=" + search;
+    url = url + "&context=" + this.GetCurrentContext();
 
     return this.httpClient.get(url);
   }
   public GetOwnLinks(search: string, sourceId: number = 0, targetId: number = 0) {
     var url: string = this.REST_API_SERVER + "/api/statement/me?search=" + search;
+    url = url + "&context=" + this.GetCurrentContext();
 
     return this.httpClient.get(url);
   }
   public GetOtherLinks(search: string, sourceId: number = 0, targetId: number = 0, linkTypeId: number = 0) {
     var url: string = this.REST_API_SERVER + "/api/statement/other?search=" + search;
+    url = url + "&context=" + this.GetCurrentContext();
     if (sourceId > 0) {
       url = url + "&sourceId=" + sourceId;
     }
@@ -93,6 +108,12 @@ export class DataService {
     var url: string = this.REST_API_SERVER + "/api/statement";
 
     return this.httpClient.post(url, statement);
+  }
+
+  public DeleteStatement(id: number) {
+    var url: string = this.REST_API_SERVER + "/api/statement/"+id.toString();
+
+    return this.httpClient.delete(url);
   }
 
   public Vote(statementId: number, negative: boolean) {

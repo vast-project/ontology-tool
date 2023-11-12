@@ -3,6 +3,7 @@ import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { Subject, Observable } from 'rxjs';
 import { DataService } from '../data.service';
 import { switchMap, debounceTime, tap, map } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -22,7 +23,7 @@ export class AnnotationsComponent implements OnInit {
   public resultsDocuments: Observable<any>;
   public resultsAnnotations: Observable<any>;
 
-  constructor(private dataService : DataService) { }
+  constructor(private dataService : DataService, private router: Router) { }
 
   ngOnInit(): void {
     this.resultsCollection=this.dataService.GetCollections("");
@@ -50,5 +51,9 @@ export class AnnotationsComponent implements OnInit {
   onClickDoc(itemId: any) {
     this.selectedDocIndex = itemId;
     this.resultsAnnotations=this.dataService.GetAnnotations(this.searchAnnotations, itemId, 0, 0);
+  }
+
+  onClickKeyword(itemId: any) {
+    this.router.navigate(['/keywords', itemId]);
   }
 }

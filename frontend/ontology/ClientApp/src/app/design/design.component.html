@@ -1,5 +1,6 @@
 <div class="designer">
   <div class="mine">
+    <h1>My Statements</h1>
     <div class="statement">
       <div class="source">
         <input matInput placeholder="Search Term" [(ngModel)]="selectedTerm" [matAutocomplete]="auto"
@@ -46,16 +47,15 @@
           </ng-container>
         </mat-autocomplete>
       </div>
-      <mat-icon class="add-icon" (click)="addStatement()">add</mat-icon>
+      <button mat-button (click)="addStatement()"><mat-icon class="add-icon">add</mat-icon></button>
     </div>
     <div class="my-statements">
-      <h1>My Statements</h1>
       <div class="statement" *ngFor="let Statement of myStatements">
         <div class="text">
           {{ Statement?.source?.name }} {{ Statement?.relationshipType?.name }} {{ Statement?.target?.name }}
         </div>
         <div class="icons">
-          <!--<mat-icon>delete_forever</mat-icon>-->
+          <button mat-button (click)="deleteStatement(Statement?.id)"><mat-icon>delete_forever</mat-icon></button>
         </div>
 
       </div>

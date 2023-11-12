@@ -9,7 +9,7 @@ namespace OntologyAPI.Auth
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, HasScopeRequirement requirement)
         {
             // If user does not have the scope claim, get out of here
-            if (!context.User.HasClaim(c => c.Type == "realm" && c.Issuer == requirement.Issuer && c.Value=="/VAST_Tools"))
+            if (!context.User.HasClaim(c => c.Type == "realm" && c.Issuer == requirement.Issuer && c.Value=="/vast_tools"))
                 return Task.CompletedTask;
 
             // Split the scopes string into an array

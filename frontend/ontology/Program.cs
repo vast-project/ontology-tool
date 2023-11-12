@@ -11,23 +11,6 @@ using VAST.Ontology.Database.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string GenerateState(OpenIdConnectOptions openIdOptions, string nonce)
-{
-    AuthenticationProperties authProperties = new AuthenticationProperties();
-    authProperties.Items.Add(".xsrf", nonce);
-    authProperties.Items.Add(".redirect", "/");
-    //authProperties.Items.Add("OpenIdConnect.Code.RedirectUri", $"https://{this.Request.Host}/signin-auth0";
-
-    //This StateDataFormat does not use the correct DataProtectionProvider
-    return openIdOptions.StateDataFormat.Protect(authProperties);
-}
-
-string GenerateNonce()
-{
-    string nonce = Convert.ToBase64String(Encoding.UTF8.GetBytes(Guid.NewGuid().ToString() + Guid.NewGuid().ToString()));
-    return DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture) + "." + nonce;
-}
-
 builder.Configuration.AddEnvironmentVariables("VAST_Ontology_");
 
 // Add services to the container.
@@ -55,6 +38,8 @@ builder.Services.AddAuthentication(options =>
         options.DisableTelemetry = true;
         options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
         options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.RequireHttpsMetadata = true;
+        options.UseTokenLifetime = true;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidAudience = builder.Configuration["Authentication:ClientId"],
@@ -72,6 +57,13 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddRazorPages();
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 builder.Services.AddDbContext<VastOntologyContext>(
     options => options.UseNpgsql(@$"Server={builder.Configuration["Database:ServerName"]};Port={builder.Configuration["Database:Port"]};Database={builder.Configuration["Database:Database"]};User Id={builder.Configuration["Database:User"]};Password={builder.Configuration["Database:Password"]};"));
 
@@ -84,10 +76,11 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseForwardedHeaders(new ForwardedHeadersOptions
+app.UseForwardedHeaders();
+app.Use((context, next) =>
 {
-    RequireHeaderSymmetry = false,
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+    context.Request.Scheme = "https";
+    return next();
 });
 
 //app.UseHttpsRedirection();

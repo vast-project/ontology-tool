@@ -18,11 +18,13 @@ namespace VAST.Ontology.Database
         public DbSet<Vote> Votes { get; set; }
         public DbSet<Collection> Collections { get; set; }
         public DbSet<Document> Documents { get; set; }
+        public DbSet<Context> Contexts { get; set; }
 
         public VastOntologyContext(DbContextOptions<VastOntologyContext> options)
             : base(options)
         {
         }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,6 +37,15 @@ namespace VAST.Ontology.Database
                 annotation.HasMany(a => a.AnnotationItem).WithMany(i => i.Annotations);
             });
 
+            modelBuilder.Entity<Context>(context =>
+            {
+                context.HasKey(a => a.Id);
+                context.Property(a => a.Id).ValueGeneratedOnAdd();
+                context.HasMany(v => v.SecondaryItems).WithMany(il => il.Contexts);
+                context.HasMany(v => v.PrimaryItems).WithOne(a => a.PrimaryContext).IsRequired(false);
+                context.HasMany(v => v.PrimaryItemLinks).WithOne(a => a.PrimaryContext).IsRequired(false);
+            });
+
             modelBuilder.Entity<Item>(item =>
             {
                 item.HasKey(a => a.Id);
@@ -42,6 +53,8 @@ namespace VAST.Ontology.Database
                 item.HasMany(a => a.SourceLinks).WithOne(i => i.Source);
                 item.HasMany(a => a.TargetLinks).WithOne(i => i.Target);
                 item.HasMany(i => i.Annotations).WithMany(a => a.AnnotationItem);
+                item.HasMany(i => i.Contexts).WithMany(a => a.SecondaryItems);
+                item.HasOne(i => i.PrimaryContext).WithMany(c => c.PrimaryItems).IsRequired(false);
             });
 
             modelBuilder.Entity<ItemLink>(itemLink =>
@@ -52,6 +65,7 @@ namespace VAST.Ontology.Database
                 itemLink.HasOne(il => il.RelationshipType);
                 itemLink.HasOne(il => il.Source).WithMany(il => il.SourceLinks);
                 itemLink.HasOne(il => il.Target).WithMany(il => il.TargetLinks);
+                itemLink.HasOne(il => il.PrimaryContext).WithMany(il => il.PrimaryItemLinks).IsRequired(false);
             });
 
             modelBuilder.Entity<RelationshipType>(relationshipType =>

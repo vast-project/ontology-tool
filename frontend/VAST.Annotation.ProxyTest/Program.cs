@@ -3,13 +3,60 @@
 using Microsoft.EntityFrameworkCore;
 using VAST.Annotation.Proxy.Data;
 using VAST.Annotation.Proxy.Services;
+using VAST.Annotation.ProxyTest;
 using VAST.Ontology.Database;
 using VAST.Ontology.Database.Models;
 
-Console.WriteLine("Please provide the password for the VAST Annotator:");
-string password = Console.ReadLine();
+List<CsvRow> ReadCsv(string filePath)
+{
+    var result = new List<CsvRow>();
+    var lines = File.ReadLines(filePath).Skip(1);  // Skip the header line
 
-AnnoDataService dataService = new AnnoDataService("vast.annotator@gmail.com", password);
+    foreach (var line in lines)
+    {
+        var fields = line.Split(';');
+        var row = new CsvRow
+        {
+            TypeId = int.Parse(fields[0]),
+            AuthorId = fields[1],
+            Inserted = DateTime.Parse(fields[2]),
+            PrimaryContextId = int.Parse(fields[3]),
+            Source = fields[4],
+            Target = fields[5],
+            ContextName = fields[6]
+        };
+        result.Add(row);
+    }
+
+    return result;
+}
+
+var csvParsed = ReadCsv(@"D:\VAST\DB_Dumps\OntologyLinks.csv");
+
+//Console.WriteLine("Please provide the password for the VAST Annotator:");
+string password = "yikbir8"; // Console.ReadLine();
+
+var optionsBuilder2 = new DbContextOptionsBuilder<VastOntologyContext>();
+optionsBuilder2.UseNpgsql("Host=localhost;Port=6543;Database=OntologyTool;Username=postgres;Password=tGwBPi33XRUIIdygVYWVY");
+var options2 = optionsBuilder2.Options;
+
+//Store the data
+
+using (VastOntologyContext context = new VastOntologyContext(options2))
+{
+    context.Collections.RemoveRange(context.Collections);
+
+    context.Documents.RemoveRange(context.Documents);
+
+    context.Annotations.RemoveRange(context.Annotations);
+
+    context.Items.RemoveRange(context.Items);
+
+    context.SaveChanges();
+}
+
+//AnnoDataService dataService = new AnnoDataService("vast.annotator@gmail.com", password);
+AnnoDataService dataService = new AnnoDataService("vast.readonly@gmail.com", "GrurvObhonsyacPo12");
 var resultCollections = await dataService.GetCollections();
 
 List<AnnotationItem> allAnnotations = new List<AnnotationItem>();
@@ -87,10 +134,11 @@ if (resultCollections.success)
     var dbItems = allKeywords.Select(k => new Item()
     {
         Description = k.group ?? "",
-        Name = k.label ?? "",
+        Name = k.label?.Replace("\\n", " ") ?? "",
         Value = k.name ?? "",
         IsImported = true,
         IsInSchema = true,
+        ItemType = ItemType.Keyword,
         LastSyncTime = DateTime.Now.ToUniversalTime()
     }).ToList();
 
@@ -103,7 +151,7 @@ if (resultCollections.success)
             {
                 IsImported = true,
                 IsInSchema = false,
-                Name = i.value.ToString() ?? "",
+                Name = i.value.ToString()?.Replace("\\n", " ") ?? "",
                 Value = i.value.ToString()?.ToLowerInvariant()?.Replace(" ", "_").Replace("/", "_") ?? "",
                 LastSyncTime = DateTime.Now.ToUniversalTime(),
                 Description = "",
@@ -125,16 +173,85 @@ if (resultCollections.success)
         Document = dbDocuments.Where(d=>d.OriginalId==k.document_id).Single()
     }).ToList();
 
-    //Store the data
-    using (VastOntologyContext context = new VastOntologyContext())
-    {
-        context.Database.Migrate();
+    //Go through all the CSV keyword/concept and concept/concept links and add them to the database
+    var optionsBuilder = new DbContextOptionsBuilder<VastOntologyContext>();
+    optionsBuilder.UseNpgsql("Host=localhost;Port=6543;Database=OntologyTool;Username=postgres;Password=tGwBPi33XRUIIdygVYWVY");
+    var options = optionsBuilder.Options;
 
-        context.Annotations.RemoveRange(context.Annotations);
-        context.Items.RemoveRange(context.Items);
-        context.Items.AddRange(dbItems);
+
+    string NormalizeString(string source)
+    {
+        return source.ToLower().Trim().Replace(" ", "_")
+            .Replace("/", "_").Replace("\\n", "")
+            .Replace(" ", "");
+    }
+
+    //Store the data
+    using (VastOntologyContext context = new VastOntologyContext(options))
+    {
+        int row = 0;
+        foreach (var link in csvParsed)
+        {
+            Console.WriteLine($"Row: {row++}");
+            var sourceItem = dbItems.FirstOrDefault(i => NormalizeString(i.Value) == NormalizeString(link.Source));
+            var targetItem = dbItems.FirstOrDefault(i => NormalizeString(i.Value) == NormalizeString(link.Target));
+
+            if (sourceItem == null)
+            {
+                //Source item does not exist yet, so create it
+                sourceItem = new Item()
+                {
+                    Description = "",
+                    IsImported = false,
+                    IsInSchema = false,
+                    ItemType = ItemType.Concept,
+                    LastSyncTime = DateTime.Now.ToUniversalTime(),
+                    Name = link.Source.Replace("\\n", " "),
+                    Value = link.Source.ToLower().Trim().Replace(" ", "_").Replace("/", "_").Replace("\\n", "")
+                };
+                dbItems.Add(sourceItem);
+            }
+
+            if (targetItem == null)
+            {
+                //Target item does not exist yet, so create it
+                targetItem = new Item()
+                {
+                    Description = "",
+                    IsImported = false,
+                    IsInSchema = false,
+                    ItemType = ItemType.Concept,
+                    LastSyncTime = DateTime.Now.ToUniversalTime(),
+                    Name = link.Target.Replace("\\n", " "),
+                    Value = link.Target.ToLower().Trim().Replace(" ", "_").Replace("/", "_").Replace("\\n", "")
+                };
+                dbItems.Add(targetItem);
+            }
+
+            //Create the link
+            var linkItem = new ItemLink()
+            {
+                Source = sourceItem,
+                Target = targetItem,
+                AuthorId = link.AuthorId,
+                CreatedDate = link.Inserted.ToUniversalTime(),
+                AuthorName = link.AuthorId,
+                RelationshipType = context.RelationshipTypes.Single(rt => rt.Id== link.TypeId),
+                PrimaryContext = context.Contexts.Single(pc => pc.Id == link.PrimaryContextId),
+            };
+
+            context.ItemLinks.Add(linkItem);
+        }
+
+        context.Collections.AddRange(dbCollections);
+
+        context.Documents.AddRange(dbDocuments);
+
         context.Annotations.AddRange(dbAnnotations);
 
+        context.Items.AddRange(dbItems);
+
         context.SaveChanges();
+
     }
 }

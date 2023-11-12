@@ -11,7 +11,7 @@ namespace VAST.Ontology.Database.Models
         public int Id { get; set; }
         public string Value { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public ItemType ItemType { get; set; }
         public bool IsDeleted { get; set; }
         public bool IsImported { get; set; }
@@ -20,5 +20,8 @@ namespace VAST.Ontology.Database.Models
         public List<ItemLink> TargetLinks { get; set; }
         public List<ItemLink> SourceLinks { get; set; }
         public List<Annotation> Annotations { get; set; }
+        public string? OriginalId { get; set; }
+        public List<Context> Contexts { get; set; }
+        public Context PrimaryContext { get; set; }
     }
 }

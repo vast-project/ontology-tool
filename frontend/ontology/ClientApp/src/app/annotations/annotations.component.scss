@@ -9,10 +9,15 @@
     cursor: pointer;
   }
 
+  .active {
+    color: var(--background3);
+    font-weight: bold;
+  }
+
   .collections {
     width: 348px;
     height: 100%;
-    padding: 33px 56px 0 56px;
+    padding: 13px 26px 0 26px;
     background-color: var(--background2);
     overflow: hidden;
   }
@@ -20,7 +25,7 @@
   .documents {
     width: 260px;
     height: 100%;
-    padding: 33px 56px 0 56px;
+    padding: 13px 26px 0 26px;
     background-color: var(--background1);
     overflow: hidden;
   }
@@ -28,8 +33,16 @@
   .annotations {
     flex: 1;
     height: 100%;
-    padding: 33px 56px 0 56px;
+    padding: 13px 26px 0 26px;
     overflow: hidden;
+
+    .explainer {
+      font-size: 10px;
+    }
+
+    .toolbar {
+      text-align: right;
+    }
 
     .item {
       .data {
@@ -54,6 +67,7 @@
             line-height: normal;
             letter-spacing: normal;
             color: #fff;
+            cursor: pointer;
           }
         }
 

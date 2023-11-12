@@ -16,5 +16,6 @@ namespace VAST.Ontology.Database.Models
         public string AuthorName { get; set; }
         public DateTime CreatedDate { get; set; }
         public List<Vote> Votes { get; set; }
+        public Context PrimaryContext { get; set; }
     }
 }

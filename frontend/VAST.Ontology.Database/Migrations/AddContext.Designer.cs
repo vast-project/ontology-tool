@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VAST.Ontology.Database;
@@ -11,9 +12,11 @@ using VAST.Ontology.Database;
 namespace VAST.Ontology.Database.Migrations
 {
     [DbContext(typeof(VastOntologyContext))]
-    partial class VastOntologyContextModelSnapshot : ModelSnapshot
+    [Migration("20221117113529_AddContext")]
+    partial class AddContext
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,7 +131,7 @@ namespace VAST.Ontology.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Contexts");
+                    b.ToTable("Context");
                 });
 
             modelBuilder.Entity("VAST.Ontology.Database.Models.Document", b =>
@@ -224,9 +227,6 @@ namespace VAST.Ontology.Database.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("PrimaryContextId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("RelationshipTypeId")
                         .HasColumnType("integer");
 
@@ -237,8 +237,6 @@ namespace VAST.Ontology.Database.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PrimaryContextId");
 
                     b.HasIndex("RelationshipTypeId");
 
@@ -378,10 +376,6 @@ namespace VAST.Ontology.Database.Migrations
 
             modelBuilder.Entity("VAST.Ontology.Database.Models.ItemLink", b =>
                 {
-                    b.HasOne("VAST.Ontology.Database.Models.Context", "PrimaryContext")
-                        .WithMany("PrimaryItemLinks")
-                        .HasForeignKey("PrimaryContextId");
-
                     b.HasOne("VAST.Ontology.Database.Models.RelationshipType", "RelationshipType")
                         .WithMany()
                         .HasForeignKey("RelationshipTypeId")
@@ -399,8 +393,6 @@ namespace VAST.Ontology.Database.Migrations
                         .HasForeignKey("TargetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("PrimaryContext");
 
                     b.Navigation("RelationshipType");
 
@@ -427,8 +419,6 @@ namespace VAST.Ontology.Database.Migrations
 
             modelBuilder.Entity("VAST.Ontology.Database.Models.Context", b =>
                 {
-                    b.Navigation("PrimaryItemLinks");
-
                     b.Navigation("PrimaryItems");
                 });
 

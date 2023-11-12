@@ -109,6 +109,22 @@ header {
     text-transform: uppercase;
     color: var(--foreground1);
   }
+
+  .context {
+    display: inline-block;
+    height: 29px;
+    padding-top: 12px;
+    font-family: var(--font2);
+    font-size: 24px;
+    font-weight: 300;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-transform: uppercase;
+    color: var(--foreground1);
+    float: right;
+  }
 }
 
 a {
@@ -189,7 +205,7 @@ h2 {
 .dashboard {
   padding: 36px 50px 36px 50px;
 
-
+  
   .primary-tiles {
     vertical-align: top;
     padding: 0;

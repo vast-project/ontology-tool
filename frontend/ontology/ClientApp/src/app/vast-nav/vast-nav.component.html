@@ -4,6 +4,18 @@
     <mat-icon class="expand-button" *ngIf="!isExpanded" (click)="toggleMenu.emit(null)">arrow_forward</mat-icon>
   </div>
   <hr />
+  <mat-list class="nav">
+    <a mat-list-item href="#login"
+       class="hover"
+       (click)="goToPlatform()">
+      <mat-icon mat-list-icon
+                [matTooltip]="!isExpanded ? 'Back to platform' : ''"
+                matTooltipPosition="right">
+        arrow_back
+      </mat-icon>
+      <p matLine *ngIf="isExpanded">Back to Platform</p>
+    </a>
+  </mat-list>
   <mat-list class="nav" *ngFor="let route of routeLinks">
     <a mat-list-item
        routerLinkActive="active-link"
@@ -17,8 +29,9 @@
       <p matLine *ngIf="isExpanded">{{ route.name }}</p>
     </a>
   </mat-list>
-  <mat-list class="nav">
-    <a mat-list-item *ngIf="!isAuthenticated()" href="#login"
+  <!--
+  <mat-list class="nav" *ngIf="!isAuthenticated()">
+    <a mat-list-item href="#login"
        class="hover"
        (click)="login()">
       <mat-icon mat-list-icon
@@ -29,4 +42,17 @@
       <p matLine *ngIf="isExpanded">Login</p>
     </a>
   </mat-list>
+  <mat-list class="nav" *ngIf="isAuthenticated()">
+    <a mat-list-item href="#logout"
+       class="hover"
+       (click)="logout()">
+      <mat-icon mat-list-icon
+                [matTooltip]="!isExpanded ? 'Logout' : ''"
+                matTooltipPosition="right">
+        supervisor_account
+      </mat-icon>
+      <p matLine *ngIf="isExpanded">Logout</p>
+    </a>
+  </mat-list>
+  -->
 </section>

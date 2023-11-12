@@ -104,8 +104,17 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwagger(c =>
+    {
+        c.RouteTemplate = "api/swagger/v1/swagger.json";
+    });
+
+
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/api/swagger/v1/swagger.json", "Ontology API V1");
+        c.RoutePrefix = "api/swagger";
+    });
 }
 
 //app.UseHttpsRedirection();
