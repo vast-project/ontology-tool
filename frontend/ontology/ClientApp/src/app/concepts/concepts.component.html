@@ -2,32 +2,40 @@
   <div class="keywords-container">
     <h1>Concepts</h1>
     <input matInput placeholder="Search" value="" class="search-box" [(ngModel)]="searchKeywords" (keyup)="onKeyUpKey()" />
-    <perfect-scrollbar class="keywords-list">
-      <mat-list class="item" *ngFor="let item of (resultsKeywords | async)">
-        <p mat-list-item matLine (click)="onClickKey(item.id)">{{ item.name }}</p>
-      </mat-list>
-    </perfect-scrollbar>
+    <ng-scrollbar orientation="vertical" class="keywords-list">
+      @for (item of (resultsKeywords | async); track item) {
+        <mat-list class="item">
+          <p mat-list-item matLine (click)="onClickKey(item.id)">{{ item.name }}</p>
+        </mat-list>
+      }
+    </ng-scrollbar>
   </div>
 
   <div class="annotations">
     <h2>Related Keywords</h2>
-    <div class="related-keywords"><span class="keyword" (click)="onClickKeyword(keyword.id)" *ngFor="let keyword of (resultsLinkedKeywords | async)">{{keyword.name}}</span></div>
+    <div class="related-keywords">@for (keyword of (resultsLinkedKeywords | async); track keyword) {
+      <span class="keyword" (click)="onClickKeyword(keyword.id)">{{keyword.name}}</span>
+    }</div>
 
     <h2>Annotations</h2>
     <input matInput placeholder="Search" value="" class="search-box" [(ngModel)]="searchAnnotations" (keyup)="onKeyUpAnn()" />
     <div class="explainer">Annotations are sorted by their position in text</div>
-    <perfect-scrollbar class="annotations-list">
-      <mat-list class="item" *ngFor="let item of (resultsAnnotations | async)">
-        <div mat-list-item matLine class="data">
-          <div class="keywords"><span class="keyword" (click)="onClickKeyword(keyword.id)" *ngFor="let keyword of item.keywords">{{keyword.name}}</span></div>
-          <div class="description">{{item.description}}</div>
-          <div class="document">{{item.documentName}}</div>
-          <div class="toolbar">
-            <a href="https://annotation.vast-project.eu/visualise/annotation/{{item.originalId}}" target="_blank"><mat-icon>visibility</mat-icon></a>
-            <a href="https://annotation-visualisation.vast-project.eu/api/collections/{{item.collectionId}}/export" target="_blank"><mat-icon>get_app</mat-icon></a>
+    <ng-scrollbar orientation="vertical" class="annotations-list">
+      @for (item of (resultsAnnotations | async); track item) {
+        <mat-list class="item">
+          <div mat-list-item matLine class="data">
+            <div class="keywords">@for (keyword of item.keywords; track keyword) {
+              <span class="keyword" (click)="onClickKeyword(keyword.id)">{{keyword.name}}</span>
+            }</div>
+            <div class="description">{{item.description}}</div>
+            <div class="document">{{item.documentName}}</div>
+            <div class="toolbar">
+              <a href="https://annotation.vast-project.eu/visualise/annotation/{{item.originalId}}" target="_blank"><mat-icon>visibility</mat-icon></a>
+              <a href="https://annotation-visualisation.vast-project.eu/api/collections/{{item.collectionId}}/export" target="_blank"><mat-icon>get_app</mat-icon></a>
+            </div>
           </div>
-        </div>
-      </mat-list>
-    </perfect-scrollbar>
+        </mat-list>
+      }
+    </ng-scrollbar>
   </div>
 </div>

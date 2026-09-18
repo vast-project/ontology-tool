@@ -15,9 +15,10 @@ class Link implements SimulationLinkDatum<Node> {
 }
 
 @Component({
-  selector: 'app-dashboard-graph',
-  templateUrl: './dashboard-graph.component.html',
-  styleUrls: ['./dashboard-graph.component.scss']
+    selector: 'app-dashboard-graph',
+    templateUrl: './dashboard-graph.component.html',
+    styleUrls: ['./dashboard-graph.component.scss'],
+    standalone: false
 })
 export class DashboardGraphComponent implements OnInit {
   ngOnInit(): void {

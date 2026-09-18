@@ -1,5 +1,5 @@
 import { BrowserModule } from "@angular/platform-browser";
-import { NgModule } from "@angular/core";
+import { NgModule, APP_ID } from "@angular/core";
 import { RouterModule } from "@angular/router";
 
 import { MatButtonModule } from '@angular/material/button';
@@ -20,15 +20,13 @@ import { MatSnackBarModule } from "@angular/material/snack-bar";
 
 import { AppComponent } from "./app.component";
 import { HomeComponent } from "./home/home.component";
-import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { AuthInterceptor } from "./auth.interceptor";
 import { VastNavComponent } from './vast-nav/vast-nav.component';
 import { LoginSuccessComponent } from './login-success/login-success.component';
 import { DashboardGraphComponent } from './dashboard-graph/dashboard-graph.component';
 
-import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
-import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
-import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
+import { NgScrollbarModule } from 'ngx-scrollbar';
 import { AnnotationsComponent } from './annotations/annotations.component';
 import { ConceptsComponent } from './concepts/concepts.component';
 import { KeywordsComponent } from './keywords/keywords.component';
@@ -36,65 +34,55 @@ import { DesignComponent } from './design/design.component';
 import { VisualizeComponent } from './visualize/visualize.component';
 import { VoteComponent } from './vote/vote.component';
 
-const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
-  suppressScrollX: true
-};
-
-@NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    VastNavComponent,
-    LoginSuccessComponent,
-    DashboardGraphComponent,
-    AnnotationsComponent,
-    ConceptsComponent,
-    KeywordsComponent,
-    DesignComponent,
-    VisualizeComponent,
-    VoteComponent
-  ],
-  imports: [
-    BrowserModule.withServerTransition({ appId: "ng-cli-universal" }),
-    HttpClientModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatButtonModule,
-    MatSnackBarModule,
-    MatMenuModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatCardModule,
-    MatSidenavModule,
-    MatSelectModule,
-    MatListModule,
-    MatTooltipModule,
-    BrowserAnimationsModule,
-    PerfectScrollbarModule,
-    MatAutocompleteModule,
-    RouterModule.forRoot([
-      { path: "", component: HomeComponent, pathMatch: "full" },
-      { path: "login-success/:token", component: LoginSuccessComponent },
-      { path: "annotations", component: AnnotationsComponent },
-      { path: "concepts", component: ConceptsComponent },
-      { path: "keywords", component: KeywordsComponent },
-      { path: "keywords/:keyword", component: KeywordsComponent },
-      //{ path: "design", component: DesignComponent },
-      //{ path: "vote", component: VoteComponent },
-      //{ path: "visualize", component: VisualizeComponent },
-    ])
-  ],
-  providers: [
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    },
-    {
-      provide: PERFECT_SCROLLBAR_CONFIG,
-      useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
-    }],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        HomeComponent,
+        VastNavComponent,
+        LoginSuccessComponent,
+        DashboardGraphComponent,
+        AnnotationsComponent,
+        ConceptsComponent,
+        KeywordsComponent,
+        DesignComponent,
+        VisualizeComponent,
+        VoteComponent
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatButtonModule,
+        MatSnackBarModule,
+        MatMenuModule,
+        MatToolbarModule,
+        MatIconModule,
+        MatCardModule,
+        MatSidenavModule,
+        MatSelectModule,
+        MatListModule,
+        MatTooltipModule,
+        BrowserAnimationsModule,
+        NgScrollbarModule,
+        MatAutocompleteModule,
+        RouterModule.forRoot([
+            { path: "", component: HomeComponent, pathMatch: "full" },
+            { path: "login-success/:token", component: LoginSuccessComponent },
+            { path: "annotations", component: AnnotationsComponent },
+            { path: "concepts", component: ConceptsComponent },
+            { path: "keywords", component: KeywordsComponent },
+            { path: "keywords/:keyword", component: KeywordsComponent },
+            //{ path: "design", component: DesignComponent },
+            //{ path: "vote", component: VoteComponent },
+            //{ path: "visualize", component: VisualizeComponent },
+        ])], providers: [
+        // BrowserModule.withServerTransition() was removed in Angular 18; the app id it
+        // configured is now supplied through the APP_ID token.
+        { provide: APP_ID, useValue: 'ng-cli-universal' },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: AuthInterceptor,
+            multi: true
+        },
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class AppModule { }

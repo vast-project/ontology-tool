@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { Subject, Observable } from 'rxjs';
 import { DataService } from '../data.service';
 import { switchMap, debounceTime, tap, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-concepts',
-  templateUrl: './concepts.component.html',
-  styleUrls: ['./concepts.component.scss']
+    selector: 'app-concepts',
+    templateUrl: './concepts.component.html',
+    styleUrls: ['./concepts.component.scss'],
+    standalone: false
 })
 export class ConceptsComponent implements OnInit {
 

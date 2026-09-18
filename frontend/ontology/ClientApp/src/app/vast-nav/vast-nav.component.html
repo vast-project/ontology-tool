@@ -1,42 +1,52 @@
 <section [class.sidenav]="isExpanded" [class.sidenav-small]="!isExpanded">
   <div class="toggle">
-    <img *ngIf="isExpanded" (click)="toggleMenu.emit(null)" src="/assets/logo/vast.png" srcset="/assets/logo/vast@2x.png 2x,/assets/logo/vast@3x.png 3x" class="logo" alt="VAST Platform" />
-    <mat-icon class="expand-button" *ngIf="!isExpanded" (click)="toggleMenu.emit(null)">arrow_forward</mat-icon>
+    @if (isExpanded) {
+      <img (click)="toggleMenu.emit(null)" src="/assets/logo/vast.png" srcset="/assets/logo/vast@2x.png 2x,/assets/logo/vast@3x.png 3x" class="logo" alt="VAST Platform" />
+    }
+    @if (!isExpanded) {
+      <mat-icon class="expand-button" (click)="toggleMenu.emit(null)">arrow_forward</mat-icon>
+    }
   </div>
   <hr />
   <mat-list class="nav">
     <a mat-list-item href="#login"
-       class="hover"
-       (click)="goToPlatform()">
+      class="hover"
+      (click)="goToPlatform()">
       <mat-icon mat-list-icon
-                [matTooltip]="!isExpanded ? 'Back to platform' : ''"
-                matTooltipPosition="right">
+        [matTooltip]="!isExpanded ? 'Back to platform' : ''"
+        matTooltipPosition="right">
         arrow_back
       </mat-icon>
-      <p matLine *ngIf="isExpanded">Back to Platform</p>
+      @if (isExpanded) {
+        <p matLine>Back to Platform</p>
+      }
     </a>
   </mat-list>
-  <mat-list class="nav" *ngFor="let route of routeLinks">
-    <a mat-list-item
-       routerLinkActive="active-link"
-       class="hover"
-       routerLink="{{ route.link }}">
-      <mat-icon mat-list-icon
-                [matTooltip]="!isExpanded ? route.name : ''"
-                matTooltipPosition="right">
-        {{ route.icon }}
-      </mat-icon>
-      <p matLine *ngIf="isExpanded">{{ route.name }}</p>
-    </a>
-  </mat-list>
+  @for (route of routeLinks; track route) {
+    <mat-list class="nav">
+      <a mat-list-item
+        routerLinkActive="active-link"
+        class="hover"
+        routerLink="{{ route.link }}">
+        <mat-icon mat-list-icon
+          [matTooltip]="!isExpanded ? route.name : ''"
+          matTooltipPosition="right">
+          {{ route.icon }}
+        </mat-icon>
+        @if (isExpanded) {
+          <p matLine>{{ route.name }}</p>
+        }
+      </a>
+    </mat-list>
+  }
   <!--
   <mat-list class="nav" *ngIf="!isAuthenticated()">
     <a mat-list-item href="#login"
-       class="hover"
-       (click)="login()">
+      class="hover"
+      (click)="login()">
       <mat-icon mat-list-icon
-                [matTooltip]="!isExpanded ? 'Login' : ''"
-                matTooltipPosition="right">
+        [matTooltip]="!isExpanded ? 'Login' : ''"
+        matTooltipPosition="right">
         supervisor_account
       </mat-icon>
       <p matLine *ngIf="isExpanded">Login</p>
@@ -44,11 +54,11 @@
   </mat-list>
   <mat-list class="nav" *ngIf="isAuthenticated()">
     <a mat-list-item href="#logout"
-       class="hover"
-       (click)="logout()">
+      class="hover"
+      (click)="logout()">
       <mat-icon mat-list-icon
-                [matTooltip]="!isExpanded ? 'Logout' : ''"
-                matTooltipPosition="right">
+        [matTooltip]="!isExpanded ? 'Logout' : ''"
+        matTooltipPosition="right">
         supervisor_account
       </mat-icon>
       <p matLine *ngIf="isExpanded">Logout</p>

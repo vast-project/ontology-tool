@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClientModule } from "@angular/common/http";
+import {} from "@angular/common/http";
 
 const ACCESS_TOKEN = "vast_access_token";
 const REFRESH_TOKEN = "vast_refresh_token";

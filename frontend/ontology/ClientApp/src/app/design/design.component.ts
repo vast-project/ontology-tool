@@ -6,9 +6,10 @@ import { DataService } from '../data.service';
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
 
 @Component({
-  selector: 'app-design',
-  templateUrl: './design.component.html',
-  styleUrls: ['./design.component.scss']
+    selector: 'app-design',
+    templateUrl: './design.component.html',
+    styleUrls: ['./design.component.scss'],
+    standalone: false
 })
 export class DesignComponent implements OnInit {
 

@@ -4,61 +4,74 @@
     <div class="statement">
       <div class="source">
         <input matInput placeholder="Search Term" [(ngModel)]="selectedTerm" [matAutocomplete]="auto"
-               [formControl]="searchTermsCtrl" placeholder="Keyword or Concept">
-        <button *ngIf="selectedTerm" matSuffix mat-icon-button aria-label="Clear" (click)="clearSelectionKeyword()">
-          <mat-icon>close</mat-icon>
-        </button>
+          [formControl]="searchTermsCtrl" placeholder="Keyword or Concept">
+        @if (selectedTerm) {
+          <button matSuffix mat-icon-button aria-label="Clear" (click)="clearSelectionKeyword()">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelectedKeyword()"
-                          [displayWith]="displayWith">
+          [displayWith]="displayWith">
           <ng-container>
-            <mat-option *ngFor="let Term of (filteredTerms)" [value]="Term">
-              <span><b>{{Term.name}}</b></span>
-            </mat-option>
+            @for (Term of (filteredTerms); track Term) {
+              <mat-option [value]="Term">
+                <span><b>{{Term.name}}</b></span>
+              </mat-option>
+            }
           </ng-container>
         </mat-autocomplete>
       </div>
       <div class="link-type">
         <input matInput placeholder="Search Term" [(ngModel)]="selectedLink" [matAutocomplete]="auto1"
-               [formControl]="searchLinksCtrl" placeholder="Link">
-        <button *ngIf="selectedLink" matSuffix mat-icon-button aria-label="Clear" (click)="clearSelectionLink()">
-          <mat-icon>close</mat-icon>
-        </button>
+          [formControl]="searchLinksCtrl" placeholder="Link">
+        @if (selectedLink) {
+          <button matSuffix mat-icon-button aria-label="Clear" (click)="clearSelectionLink()">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
         <mat-autocomplete #auto1="matAutocomplete" (optionSelected)="onSelectedLink()"
-                          [displayWith]="displayLinkWith">
+          [displayWith]="displayLinkWith">
           <ng-container>
-            <mat-option *ngFor="let Term of (filteredLinks)" [value]="Term">
-              <span><b>{{Term.name}}</b></span>
-            </mat-option>
+            @for (Term of (filteredLinks); track Term) {
+              <mat-option [value]="Term">
+                <span><b>{{Term.name}}</b></span>
+              </mat-option>
+            }
           </ng-container>
         </mat-autocomplete>
       </div>
       <div class="target">
         <input matInput placeholder="Search Term" [(ngModel)]="selectedConcept" [matAutocomplete]="auto2"
-               [formControl]="searchConceptsCtrl" placeholder="Concept">
-        <button *ngIf="selectedConcept" matSuffix mat-icon-button aria-label="Clear" (click)="clearSelectionConcept()">
-          <mat-icon>close</mat-icon>
-        </button>
+          [formControl]="searchConceptsCtrl" placeholder="Concept">
+        @if (selectedConcept) {
+          <button matSuffix mat-icon-button aria-label="Clear" (click)="clearSelectionConcept()">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
         <mat-autocomplete #auto2="matAutocomplete" (optionSelected)="onSelectedConcept()"
-                          [displayWith]="displayWith">
+          [displayWith]="displayWith">
           <ng-container>
-            <mat-option *ngFor="let Term of (filteredConcepts)" [value]="Term">
-              <span><b>{{Term.name}}</b></span>
-            </mat-option>
+            @for (Term of (filteredConcepts); track Term) {
+              <mat-option [value]="Term">
+                <span><b>{{Term.name}}</b></span>
+              </mat-option>
+            }
           </ng-container>
         </mat-autocomplete>
       </div>
       <button mat-button (click)="addStatement()"><mat-icon class="add-icon">add</mat-icon></button>
     </div>
     <div class="my-statements">
-      <div class="statement" *ngFor="let Statement of myStatements">
-        <div class="text">
-          {{ Statement?.source?.name }} {{ Statement?.relationshipType?.name }} {{ Statement?.target?.name }}
+      @for (Statement of myStatements; track Statement) {
+        <div class="statement">
+          <div class="text">
+            {{ Statement?.source?.name }} {{ Statement?.relationshipType?.name }} {{ Statement?.target?.name }}
+          </div>
+          <div class="icons">
+            <button mat-button (click)="deleteStatement(Statement?.id)"><mat-icon>delete_forever</mat-icon></button>
+          </div>
         </div>
-        <div class="icons">
-          <button mat-button (click)="deleteStatement(Statement?.id)"><mat-icon>delete_forever</mat-icon></button>
-        </div>
-
-      </div>
+      }
     </div>
   </div>
 </div>

@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { Subject, Observable } from 'rxjs';
 import { DataService } from '../data.service';
 import { switchMap, debounceTime, tap, map } from 'rxjs/operators';
@@ -7,9 +6,10 @@ import { Router } from '@angular/router';
 
 
 @Component({
-  selector: 'app-annotations',
-  templateUrl: './annotations.component.html',
-  styleUrls: ['./annotations.component.scss']
+    selector: 'app-annotations',
+    templateUrl: './annotations.component.html',
+    styleUrls: ['./annotations.component.scss'],
+    standalone: false
 })
 export class AnnotationsComponent implements OnInit {
   public searchCollections:string = "";

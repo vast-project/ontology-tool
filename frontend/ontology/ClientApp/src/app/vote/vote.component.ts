@@ -5,9 +5,10 @@ import { HttpClient } from '@angular/common/http';
 import { DataService } from '../data.service'
 
 @Component({
-  selector: 'app-vote',
-  templateUrl: './vote.component.html',
-  styleUrls: ['./vote.component.scss']
+    selector: 'app-vote',
+    templateUrl: './vote.component.html',
+    styleUrls: ['./vote.component.scss'],
+    standalone: false
 })
 export class VoteComponent implements OnInit {
 

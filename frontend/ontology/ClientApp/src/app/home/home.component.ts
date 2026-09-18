@@ -3,8 +3,9 @@ import { DashboardGraphComponent } from '../dashboard-graph/dashboard-graph.comp
 import { DataService } from '../data.service';
 
 @Component({
-  selector: "app-home",
-  templateUrl: "./home.component.html",
+    selector: "app-home",
+    templateUrl: "./home.component.html",
+    standalone: false
 })
 
 export class HomeComponent implements OnInit {

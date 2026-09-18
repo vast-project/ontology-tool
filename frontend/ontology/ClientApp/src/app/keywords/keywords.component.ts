@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { Subject, Observable } from 'rxjs';
 import { DataService } from '../data.service';
 import { switchMap, debounceTime, tap, map } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-keywords',
-  templateUrl: './keywords.component.html',
-  styleUrls: ['./keywords.component.scss']
+    selector: 'app-keywords',
+    templateUrl: './keywords.component.html',
+    styleUrls: ['./keywords.component.scss'],
+    standalone: false
 })
 export class KeywordsComponent implements OnInit {
   public searchKeywords: string = "";

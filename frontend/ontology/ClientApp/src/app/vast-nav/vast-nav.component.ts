@@ -3,9 +3,10 @@ import { AuthService } from '../auth.service';
 import { TokenService } from '../token.service';
 
 @Component({
-  selector: 'app-vast-nav',
-  templateUrl: './vast-nav.component.html',
-  styleUrls: ['./vast-nav.component.scss']
+    selector: 'app-vast-nav',
+    templateUrl: './vast-nav.component.html',
+    styleUrls: ['./vast-nav.component.scss'],
+    standalone: false
 })
 export class VastNavComponent implements OnInit {
   @Input() isExpanded: boolean = false;

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using OntologyAPI.Auth;
 using VAST.Ontology.Database;
 
@@ -77,21 +77,12 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "Bearer"
     });
 
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    // Swashbuckle 10 takes a factory so the requirement can bind to the document that
+    // owns the security scheme definition.
+    c.AddSecurityRequirement(document => new OpenApiSecurityRequirement()
     {
         {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                },
-                Scheme = "oauth2",
-                Name = "Bearer",
-                In = ParameterLocation.Header,
-
-            },
+            new OpenApiSecuritySchemeReference("Bearer", document),
             new List<string>()
         }
     });

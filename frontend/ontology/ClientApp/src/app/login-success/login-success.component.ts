@@ -3,9 +3,10 @@ import { AuthService } from '../auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-login-success',
-  templateUrl: './login-success.component.html',
-  styleUrls: ['./login-success.component.scss']
+    selector: 'app-login-success',
+    templateUrl: './login-success.component.html',
+    styleUrls: ['./login-success.component.scss'],
+    standalone: false
 })
 export class LoginSuccessComponent implements OnInit {
   private routeState: any = null;

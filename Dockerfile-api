@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build-env
 WORKDIR /
 
 # Copy everything
@@ -9,7 +9,7 @@ WORKDIR /api/OntologyAPI
 RUN dotnet publish -c Release -o publishContainer
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
 RUN apt-get update && apt-get -y upgrade
 WORKDIR /frontend/ontology
 COPY --from=build-env /api/OntologyAPI/publishContainer .

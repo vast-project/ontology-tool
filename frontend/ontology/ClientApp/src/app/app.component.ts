@@ -4,8 +4,9 @@ import { AuthService } from './auth.service';
 import { DataService } from "./data.service";
 
 @Component({
-  selector: "app-root",
-  templateUrl: "./app.component.html"
+    selector: "app-root",
+    templateUrl: "./app.component.html",
+    standalone: false
 })
 export class AppComponent {
   title = "Ontology Design Tool";

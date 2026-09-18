@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build-env
 WORKDIR /
 
 # Copy everything
@@ -11,8 +11,8 @@ RUN dotnet restore
 RUN dotnet publish -c Release -o publishContainer
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
-RUN apt update && apt upgrade
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
+RUN apt-get update && apt-get -y upgrade
 WORKDIR /frontend/ontology
 COPY --from=build-env /frontend/VAST.Annotation.ProxyTest/publishContainer .
 ENTRYPOINT ["dotnet", "VAST.Annotation.ProxyTest.dll"]
