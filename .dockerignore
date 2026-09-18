@@ -1,0 +1,20 @@
+# Keep the host's build output out of the image.
+# Without this, "COPY . ." lands the host's node_modules on top of the one the
+# container just installed, which both bloats the context and risks shipping
+# host-built native binaries.
+node_modules/
+**/node_modules/
+.angular/
+**/.angular/
+dist/
+**/dist/
+bin/
+**/bin/
+obj/
+**/obj/
+publishContainer/
+**/publishContainer/
+.vs/
+.git/
+.gitignore
+**/*.user
